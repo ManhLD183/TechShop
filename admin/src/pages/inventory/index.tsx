@@ -168,7 +168,7 @@ const Page: NextPageWithLayout = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Sản phẩm</TableHead>
-                <TableHead>Danh mục</TableHead>
+               
                 <TableHead>SKU</TableHead>
                 <TableHead>Giá</TableHead>
                 <TableHead>Đã có khách đặt</TableHead>
@@ -204,9 +204,7 @@ const Page: NextPageWithLayout = () => {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={"outline"}>{item.category.name}</Badge>
-                  </TableCell>
+                
                   <TableCell>{item.sku}</TableCell>
                   <TableCell>{formatPrice(item.price)}</TableCell>
                   <TableCell>{item.pendingOrders.length}</TableCell>

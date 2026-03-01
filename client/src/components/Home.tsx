@@ -208,7 +208,7 @@ const Home = () => {
               <div className="product-banner-right">
                 <div className="img-banner">
                   <div className="pbanner-image hvreff-defm10 posr">
-                    <img src="../../src/Assets/img__bt_3.jpg" alt="" />
+                    <img src="../../src/Assets/banner__1.png" alt="" />
                   </div>
                 </div>
                 <div className="img-banner">

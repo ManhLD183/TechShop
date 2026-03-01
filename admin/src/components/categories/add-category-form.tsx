@@ -26,6 +26,7 @@ import Image from "next/image";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 import { OurFileRouter } from "@/lib/uploadthing";
 import { isArrayOfFile } from "@/lib/utils";
+import { url } from "inspector";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -70,10 +71,11 @@ export default function AddCategoryForm() {
         })
       : null;
     setUpload(true);
+    console.log(images)
     addCollectionMutation.mutate({
       name: data.name,
       description: data.description,
-      image: images?.[0].url ?? "",
+      image: "https://static-images.vnncdn.net/vps_images/000001/000003/2026/2/6/apple-1557.jpg?width=0&s=w_eoFm_-2yDQcTMZe66fow",
     });
   }
 
