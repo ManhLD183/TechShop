@@ -527,13 +527,13 @@ body {
 }
 
 .header-middle {
-  padding: 20px 0;
+  padding: 0px 0;
 }
 
 .header-whishlist {
   float: right;
 
-  margin-top: 5px;
+  margin-top: 20px;
 }
 
 .header-whish {
@@ -542,9 +542,7 @@ body {
   padding-bottom: 7px;
 }
 
-.header-middle-phone {
-  float: left;
-}
+
 
 .header-middle-phone {
   float: left;

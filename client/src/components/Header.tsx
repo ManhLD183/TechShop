@@ -131,7 +131,7 @@ const Header = () => {
                 <div className="col-lg-3 col-md-3 col-sm-12">
                   <div style={{ marginTop: "12px" }}>
                     <img
-                      src="../../src/Assets/sport-shop-logo.svg"
+                      src="../../src/Assets/logo_techshop.png"
                       alt=""
                       width={180}
                       height={180}

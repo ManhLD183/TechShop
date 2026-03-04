@@ -133,7 +133,7 @@ export default function Sidebar({
           </svg>
         </div>
         <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
-          Sport Shop
+          TechShop
         </div>
       </Link>
 
