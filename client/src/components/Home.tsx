@@ -92,7 +92,7 @@ const Home = () => {
     const fetchBanners = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/getBanners"
+          "http://localhost:8080/api/getBanners",
         );
         setBanners(response.data);
         setIsLoadingBanners(false);
@@ -111,180 +111,130 @@ const Home = () => {
     return formattedPrice;
   };
   return (
-    <div>
-      <div className="banners">
-        <Slider {...bannerSettings}>
-          {isLoadingBanners ? (
-            <p>Đang tải banners...</p>
+    <div className="tsHome">
+      {/* HERO SLIDER */}
+      <section className="tsHero">
+        <div className="tsHero__wrap">
+          <Slider {...bannerSettings}>
+            {isLoadingBanners ? (
+              <p className="tsLoading">Đang tải banners...</p>
+            ) : (
+              banners.map((banner, index) => (
+                <div className="tsHero__slide" key={index + 1}>
+                  <img src={banner.image} alt={banner.name} />
+                </div>
+              ))
+            )}
+          </Slider>
+        </div>
+      </section>
+
+      {/* FEATURED PRODUCTS */}
+      <section className="tsSection">
+        <div className="container">
+          <header className="tsSection__head">
+            <h3 className="tsSection__title">SẢN PHẨM NỔI BẬT</h3>
+            <img
+              className="tsSection__icon"
+              src="../../src/Assets/icon-title.png"
+              alt=""
+            />
+          </header>
+
+          <div className="tsGrid">
+            {products?.map((product, index) => (
+              <article className="tsCard" key={index + 1}>
+                <a className="tsCard__img" href={`/products/${product._id}`}>
+                  <img
+                    src={`${product?.images?.[0]?.url}`}
+                    alt={product.name}
+                  />
+                </a>
+
+                <div className="tsCard__body">
+                  <a
+                    className="tsCard__name"
+                    href={`/products/${product._id}`}
+                    title={product.name}
+                  >
+                    {product.name}
+                  </a>
+
+                  <div className="tsCard__row">
+                    <div className="tsPrice">
+                      <span className="tsPrice__text">
+                        {product.minPrice === product.maxPrice
+                          ? `${formatPrice(product.maxPrice)}`
+                          : `${formatPrice(product.minPrice)} - ${formatPrice(product.maxPrice)}`}
+                      </span>
+                    </div>
+
+                    <button
+                      className="tsCard__btn"
+                      onClick={() => navigate(`/products/${product._id}`)}
+                      type="button"
+                    >
+                      Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* BANNER BLOCK: LEFT = 2 RIGHT */}
+      <section className="tsSection tsSection--banner">
+        <div className="container">
+          <div className="tsBanner4">
+            <a className="tsBanner4__item" href="#">
+              <img src="../../src/Assets/banner_new_1.png" alt="" />
+            </a>
+
+            <a className="tsBanner4__item" href="#">
+              <img src="../../src/Assets/banner_new_3.png" alt="" />
+            </a>
+
+            <a className="tsBanner4__item" href="#">
+              <img src="../../src/Assets/banner_new_2.png" alt="" />
+            </a>
+
+            <a className="tsBanner4__item" href="#">
+              <img src="../../src/Assets/banner_new_1.png" alt="" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURED CATEGORIES */}
+      {/* <section className="tsSection">
+    <div className="container">
+      <header className="tsSection__head">
+        <h3 className="tsSection__title">DANH MỤC NỔI BẬT</h3>
+        <img className="tsSection__icon" src="../../src/Assets/icon-title.png" alt="" />
+      </header>
+
+      <div className="tsCatWrap">
+        <Slider {...sliderSettings}>
+          {isLoadingCategories ? (
+            <p className="tsLoading">Đang tải danh mục...</p>
           ) : (
-            banners.map((banner: any, index) => (
-              <div className="banner__item" key={index + 1}>
-                <img src={banner.image} alt={banner.name} />
+            categories.map((category) => (
+              <div className="tsCatSlide" key={category._id}>
+                <Link className="tsCatCard" to={`/categories/${category._id}`}>
+                  <div className="tsCatCard__img">
+                    <img src={category.image} alt={category.name} />
+                  </div>
+                  <div className="tsCatCard__name">{category.name}</div>
+                </Link>
               </div>
             ))
           )}
         </Slider>
       </div>
-      <div className="new-arrival-product-area hp1-napa pt-60">
-        <div className="container">
-          <div className="row">
-            <div className="product-tab-category-wrapper">
-              <div className="col-xs-12">
-                <div className="home-product-tab-category text-center">
-                  <div className="section-title title-head">
-                    <h3>SẢN PHẨM NỔI BẬT</h3>
-                    <img src="../../src/Assets/icon-title.png" alt="" />
-                  </div>
-                </div>
-              </div>
-              <div className="product-conttab-wrapper">
-                <div className="active-owl-product def-owl row">
-                  {products?.map((product: any, index: any) => (
-                    <div className="col-md-4 col-lg-3 col-sm-6" key={index + 1}>
-                      <div className="single-product">
-                        <div className="product-wrapper posr">
-                          <div className="priduct-img-wrapper posr">
-                            <div className="product-img">
-                              <a
-                                className="btn-def btn-product-qview q-view"
-                                data-bs-toggle="modal"
-                                data-bs-target=".modal"
-                                onClick={() => {
-                                  navigate(`/products/${product._id}`);
-                                }}
-                              >
-                                <i className=" product-search fa fa-search"></i>{" "}
-                                Chi tiết
-                              </a>
-                              <a href={`/products/${product._id}`}>
-                                <img
-                                  src={`${product?.images[0].url}`}
-                                  alt={product.name}
-                                />
-                              </a>
-                            </div>
-                          </div>
-                          <div className="product-bottom-text posr">
-                            <div className="product-bottom-title deft-underline2">
-                              <a
-                                href={`/products/${product._id}`}
-                                title={product.name}
-                              >
-                                <h4>{product.name}</h4>
-                              </a>
-                            </div>
-                            <div className="product-bottom-price">
-                              <span>
-                                {product.minPrice === product.maxPrice
-                                  ? `${formatPrice(product.maxPrice)}`
-                                  : `${formatPrice(
-                                      product.minPrice
-                                    )} - ${formatPrice(product.maxPrice)} `}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="product-banner-area hp2pbanner-area">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-6 col-md-6 col-sm-12">
-              <div className="product-banner-left">
-                <div className="pbanner-image hvreff-defm20 posr">
-                  <img src="../../src/Assets/img__bt.jpg" alt="" />
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-12">
-              <div className="product-banner-right">
-                <div className="img-banner">
-                  <div className="pbanner-image hvreff-defm10 posr">
-                    <img src="../../src/Assets/banner__1.png" alt="" />
-                  </div>
-                </div>
-                <div className="img-banner">
-                  <div className="pbanner-image hvreff-defm10 posr">
-                    <img src="../../src/Assets/img__bt_4.jpg" alt="" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="new-arrival-product-area hp1-napa pt-60">
-        <div className="container">
-          <div className="row">
-            <div className="product-tab-category-wrapper">
-              <div className="col-xs-12">
-                <div className="home-product-tab-category text-center">
-                  <div className="section-title title-head">
-                    <h3>DANH MỤC NỔI BẬT</h3>
-                    <img src="../../src/Assets/icon-title.png" alt="" />
-                  </div>
-                </div>
-              </div>
-              <div className="product-conttab-wrapper">
-                <div className="tab-content">
-                  <div
-                    role="tabpanel"
-                    className="tab-pane show active"
-                    id="newArrival"
-                    aria-labelledby="tab1"
-                  >
-                    <div className="active-owl-product categorySlider def-owl ">
-                      <Slider {...sliderSettings}>
-                        {isLoadingCategories ? (
-                          <p>Đang tải danh mục...</p>
-                        ) : (
-                          categories.map((category) => (
-                            <div
-                              className="categorySlideItem"
-                              key={category._id}
-                            >
-                              <div className="single-product">
-                                <div className="product-wrapper posr">
-                                  <div className="priduct-img-wrapper posr">
-                                    <div className="product-img">
-                                      <Link to={`/categories/${category._id}`}>
-                                        <img
-                                          src={category.image}
-                                          alt={category.name}
-                                        />
-                                      </Link>
-                                    </div>
-                                  </div>
-                                  <div className="product-bottom-text posr">
-                                    <div className="product-bottom-title deft-underline2">
-                                      <Link to={`/categories/${category._id}`}>
-                                        <h4>{category.name}</h4>
-                                      </Link>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </Slider>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    </div>
+  </section> */}
     </div>
   );
 };

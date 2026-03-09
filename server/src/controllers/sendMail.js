@@ -23,13 +23,13 @@ export const sendEmail = async (
     },
     service: "gmail",
     auth: {
-      user: "tranngocdong2042003@gmail.com",
+      user: "manhld21082003@gmail.com",
       pass: process.env.PasswordMail,
     },
   });
 
   const mailOptions = {
-    from: "tranngocdong2042003@gmail.com",
+    from: "manhld21082003@gmail.com",
     to: to,
     subject: "Đơn hàng của bạn",
     html: htmlContent,

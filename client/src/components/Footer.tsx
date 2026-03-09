@@ -15,7 +15,7 @@ const Footer = () => {
                   </div>
                   <div className="footer-text">
                     <p>
-                      Là một cửa hàng chuyên cung cấp các phụ kiện bóng đá và thể thao 
+                      
                     </p>
                    
                   </div>
@@ -123,7 +123,7 @@ const Footer = () => {
             <div className="col-lg-4 col-md-6 col-sm-12 footer-bottom-right">
               <div className="footer-bottom-image">
                 <a>
-                  <img src="../../src/Assets/sport-shop-logo.svg" alt="SportShop" />{" "}
+                  {/* <img src="../../src/Assets/sport-shop-logo.svg" alt="SportShop" />{" "} */}
                 </a>
               </div>
             </div>
