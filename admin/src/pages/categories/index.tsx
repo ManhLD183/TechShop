@@ -55,7 +55,7 @@ const Page: NextPageWithLayout = () => {
       ),
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
-          <Avatar className="h-10 w-10 rounded-sm border border-gray-200">
+          {/* <Avatar className="h-10 w-10 rounded-sm border border-gray-200">
             <AvatarImage
               src={
                 row.original.image ??
@@ -64,7 +64,7 @@ const Page: NextPageWithLayout = () => {
               alt="Avatar"
             />
             <AvatarFallback>OM</AvatarFallback>
-          </Avatar>
+          </Avatar> */}
           {row.original.name}
         </div>
       ),
