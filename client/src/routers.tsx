@@ -17,6 +17,8 @@ import OrderClient from "./components/OrderClient";
 import CategoryDetail from "./components/CategoryDetail";
 import ProfileDetail from "./components/ProfileDetail";
 import OrderDetail from "./components/OrderDetail";
+import Policy from "./components/Policy";
+import Promotions from "./components/Promotions";
 import Cookies from "js-cookie";
 const PrivateRouter = () => {
   const token = Cookies.get("token");
@@ -46,6 +48,8 @@ export const routers = createBrowserRouter([
       { path: "/contact", element: <Contact /> },
       { path: "/blog", element: <Blog /> },
       { path: "/about", element: <About /> },
+      { path: "/policy", element: <Policy /> },
+      { path: "/promotions", element: <Promotions /> },
       {
         path: "/profile",
         element: <PrivateRouter />,

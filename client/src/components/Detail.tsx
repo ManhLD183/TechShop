@@ -175,7 +175,7 @@ const [quantity, setQuantity] = useState<any>(1);
             </p>
           ) : (
             <>
-              <div>
+              <div className="theme-page">
                 <section id="prodetails" className="section-p1 ctnr">
                   <div className="single-pro-image">
                     <div className="project-image-wrapper">

@@ -8,7 +8,7 @@ import { useCreateOrderMutation } from "../api/order";
 import { Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Modal } from "antd";
+import { Modal } from "./ui";
 import { useGetAddressByAcountQuery } from "../api/address";
 import { usePayMomoMutation } from "../api/payment";
 import Swal from "sweetalert2";
@@ -171,7 +171,7 @@ const Cart = () => {
     return formattedPrice;
   };
   return (
-    <div>
+    <div className="theme-page">
       <section id="page-header3" className="about-header"></section>
       {!token ? (
         <div className="cart__zero">

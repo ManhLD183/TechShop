@@ -36,7 +36,7 @@ const Page: NextPageWithLayout = () => {
 
       <Card className="mt-2">
         <CardContent>
-          <div className="flex flex-col rounded-lg bg-white p-8 dark:border-neutral-800 dark:bg-black md:p-12 lg:flex-row lg:gap-8">
+          <div className="flex flex-col rounded-lg border border-border bg-card p-8 md:p-12 lg:flex-row lg:gap-8">
             <div className="h-full w-full basis-full lg:basis-3/6">
               <Gallery
                 images={
@@ -63,7 +63,7 @@ const Page: NextPageWithLayout = () => {
                         <button
                           key={value}
                           className={cn(
-                            "flex min-w-[48px] items-center justify-center rounded-full border bg-neutral-100 px-2 py-1 text-sm dark:border-neutral-800 dark:bg-neutral-900"
+                            "flex min-w-[48px] items-center justify-center rounded-full border border-border bg-muted px-2 py-1 text-sm"
                           )}
                         >
                           {value}

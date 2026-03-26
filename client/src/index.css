@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --theme-bg: #131313;
+    --theme-surface: #1c1b1b;
+    --theme-surface-high: #2a2a2a;
+    --theme-text: #e5e2e1;
+    --theme-text-muted: #c4c6cf;
+    --theme-primary: #b1c7f3;
+    --theme-secondary: #ffb59c;
+    --theme-outline: rgba(68, 71, 78, 0.3);
+  }
+
+  body {
+    @apply antialiased;
+    background: var(--theme-bg);
+    color: var(--theme-text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+@layer components {
+  .theme-page {
+    @apply min-h-screen;
+    background: var(--theme-bg);
+    color: var(--theme-text);
+  }
+
+  .theme-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .theme-surface {
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-outline);
+    @apply rounded-2xl;
+  }
+
+  .theme-muted {
+    color: var(--theme-text-muted);
+  }
+}
+
+/* Bridge legacy pages to dark theme without breaking old markup */
+#page-header,
+#page-header2,
+#page-header3,
+#product1,
+#prodetails,
+#detail-order,
+.account-page__content,
+.box__profileDetail,
+#cart-add,
+#cart {
+  color: var(--theme-text);
+}
+
+#product1 .pro,
+#prodetails .single-pro-details,
+#cart-add #subtotal,
+.content__profile,
+.thank-box,
+.detail-order-info {
+  background: var(--theme-surface);
+  border-color: var(--theme-outline);
+}
+
+#product1 .des span,
+#product1 .des h5,
+#prodetails span,
+.detail-order-info__title,
+.theme-legacy-muted {
+  color: var(--theme-text-muted);
+}
+
+#product1 .des h4,
+#prodetails .price-detail,
+.detail-order-heading,
+.title__profile {
+  color: var(--theme-text);
+}
+
+button.normal,
+.payNow__cart0,
+.btn__update,
+.btn__addAdress,
+.btn__updatePassword {
+  background: var(--theme-primary);
+  color: #0f172a;
+  border: none;
+  border-radius: 999px;
+}
+
+/* Legacy template CSS uses light colors for typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--theme-text);
+}
+
+p {
+  color: var(--theme-text-muted);
+}
+
+/* Legacy auth/login layout (Assets/Login.css) */
+.body {
+  background-color: var(--theme-bg) !important;
+  background-image: none !important;
+  color: var(--theme-text) !important;
+}
+
+.login-box {
+  background: var(--theme-surface) !important;
+  border-color: var(--theme-outline) !important;
+  color: var(--theme-text) !important;
+}
+
+.input-field {
+  color: var(--theme-text) !important;
+  border-color: var(--theme-outline) !important;
+  background: transparent !important;
+}
+
+.input-submit {
+  background: var(--theme-primary) !important;
+  color: #0f172a !important;
+  border: none !important;
+}
+
+.error {
+  color: var(--theme-secondary) !important;
+}
+
+/* Legacy order pages (Assets/orderDetail.css + Assets/orderClient.css) */
+.account-page__content {
+  background: var(--theme-surface) !important;
+  border: 1px solid var(--theme-outline) !important;
+}
+
+.order-header {
+  background-color: var(--theme-surface-high) !important;
+  color: var(--theme-text) !important;
+}
+
+.order-body,
+.order-item,
+.order-footer {
+  background-color: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+}
+
+.order-status-badge.order-status-badge-canceled {
+  background-color: var(--theme-surface-high) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-outline) !important;
+}
+
+table.table {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border: 1px solid var(--theme-outline) !important;
+}
+
+.table thead tr th {
+  background-color: var(--theme-surface-high) !important;
+  color: var(--theme-text) !important;
+}
+
+.detail-order-status {
+  color: var(--theme-primary) !important;
+  border-color: var(--theme-primary) !important;
+}
+
+.thank-box .table tfoot tr.total_payment td {
+  background-color: var(--theme-primary) !important;
+  color: #0f172a !important;
+}
+
+/* Ant Design Modal theme */
+.theme-modal .ant-modal-content {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border: 1px solid var(--theme-outline) !important;
+  border-radius: 1rem !important;
+}
+
+.theme-modal-wrap .ant-modal-content {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border: 1px solid var(--theme-outline) !important;
+  border-radius: 1rem !important;
+}
+
+.theme-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--theme-outline) !important;
+}
+
+.theme-modal-wrap .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--theme-outline) !important;
+}
+
+.theme-modal .ant-modal-title {
+  color: var(--theme-text) !important;
+}
+
+.theme-modal-wrap .ant-modal-title {
+  color: var(--theme-text) !important;
+}
+
+.theme-modal .ant-modal-close {
+  color: var(--theme-text) !important;
+}
+
+.theme-modal-wrap .ant-modal-close {
+  color: var(--theme-text) !important;
+}
+
+.theme-modal .ant-modal-body {
+  color: var(--theme-text) !important;
+}
+
+.theme-modal-wrap .ant-modal-body {
+  color: var(--theme-text) !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

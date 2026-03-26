@@ -7,7 +7,6 @@ import {
   useUpdatePasswordMutation,
   useUpdateProfileMutation,
 } from "../api/acount";
-import { useGetDiscountsQuery } from "../api/discount";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import {
@@ -198,7 +197,7 @@ const ProfileDetail = () => {
       {isLoading ? (
         <div style={{ padding: "20px", textAlign: "center" }}>Đang tải ...</div>
       ) : (
-        <div>
+        <div className="theme-page">
           <div className="box__profileDetail">
             <div className="container">
               <h2 className="title__profile">

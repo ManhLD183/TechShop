@@ -129,7 +129,7 @@ const Page: NextPageWithLayout = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 Tổng đơn hàng
               </CardTitle>
               <svg
@@ -162,7 +162,7 @@ const Page: NextPageWithLayout = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 Tổng đơn hàng đang xử lý
               </CardTitle>
               <CircleEllipsis className="lucide lucide-package-2 h-6 w6 bg-yellow-100 text-yellow-600 rounded-md p-1 cursor-pointer hover:bg-yellow-200 hover:text-yellow-700 transition-colors" />
@@ -190,7 +190,7 @@ const Page: NextPageWithLayout = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 Tổng đơn đã hủy
               </CardTitle>
               <svg
@@ -232,7 +232,7 @@ const Page: NextPageWithLayout = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 Tổng đơn đã hoàn thành
               </CardTitle>
               <svg
@@ -292,7 +292,7 @@ const Page: NextPageWithLayout = () => {
             <Input
               defaultValue={searchParams.get("q") ?? ""}
               placeholder="Tìm kiếm theo tên, số điện thoại, mã đơn hàng"
-              className="flex-1 h-10 shadow-none border-gray-300"
+              className="h-10 flex-1 border-border shadow-none"
               onChange={(event) => {
                 queryParams({
                   set: {
@@ -352,7 +352,7 @@ const Page: NextPageWithLayout = () => {
                     className={cn(
                       !order.shipperId &&
                         order.deliveryStatus !== OrderDeliveryStatus.SHIPPED &&
-                        "bg-yellow-100 hover:bg-yellow-200"
+                        "bg-[hsl(var(--pending))]/15 hover:bg-[hsl(var(--pending))]/20"
                     )}
                     key={order._id}
                   >
@@ -469,7 +469,7 @@ const Page: NextPageWithLayout = () => {
 
           {orders?.docs.length === 0 && (
             <div className="mb-12 flex flex-col items-center justify-center py-12">
-              <div className="z-10 text-xl font-semibold text-gray-700">
+              <div className="z-10 text-xl font-semibold text-foreground">
                 Không tìm thấy đơn hàng nào
               </div>
               <Image

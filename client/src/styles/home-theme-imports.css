@@ -1,0 +1,10 @@
+/*
+  CSS import order based on Home refactor:
+  1) Tailwind layers and tokens in index.css
+  2) Legacy base styles that still provide shared selectors
+  3) Page-specific CSS stays imported in each page component
+*/
+
+@import "../Assets/style.css";
+@import "../Assets/CSS/style.css";
+@import "../Assets/CSS/responsive.css";

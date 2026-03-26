@@ -1,136 +1,76 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
-    <div>
-      <div className="main-footer-area">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-4 col-md-6 col-sm-12">
-              <div className="footer-content-wrapper">
-                <div className="footer-content">
-                  <div
-                    id="f-about"
-                    className="footer-title def-funderline ftitle-about posr"
-                  >
-                    <h5 className="active-about">Về chúng tôi</h5>
-                  </div>
-                  <div className="footer-text">
-                    <p>
-                      
-                    </p>
-                   
-                  </div>
-
-                  <ul className="footer-social-icon">
-                    <li>
-                      <a href="#">
-                        <i className="zmdi zmdi-facebook"></i>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="zmdi zmdi-twitter"></i>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="zmdi zmdi-rss"></i>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="zmdi zmdi-youtube"></i>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="zmdi zmdi-google-plus"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-2 col-md-6 col-sm-12">
-              <div className="footer-list-wrapper">
-                <div
-                  id="f-info"
-                  className="footer-title def-funderline ftitle-info posr"
+    <footer className="mt-10 border-t border-[color:var(--theme-outline)] bg-[color:var(--theme-bg)] text-[color:var(--theme-text)]">
+      <div className="theme-container py-10">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <h5 className="mb-3 text-lg font-bold">TECH SHOP</h5>
+            <p className="text-sm text-[color:var(--theme-text-muted)]">
+              Hệ thống bán lẻ điện thoại và phụ kiện chính hãng. Refactor theo blueprint,
+              giữ nguyên logic dữ liệu từ hệ thống hiện tại.
+            </p>
+          </div>
+          <div>
+            <h6 className="mb-3 font-semibold">Sản phẩm</h6>
+            <ul className="flex flex-col gap-2">
+              <li>
+                <Link
+                  to="/shops"
+                  className="text-sm text-[color:var(--theme-text-muted)] transition hover:text-[color:var(--theme-text)]"
                 >
-                  <h5 className="active">Thông tin</h5>
-                </div>
-                <ul className="footer-list-text jscroll-info">
-                  <li>
-                    <a href="shop.html" title="New products">
-                     Sản phẩm mới
-                    </a>
-                  </li>
-                  <li>
-                    <a href="single-product.html" title="Best sellers">
-                      Sản phẩm bán chạy
-                    </a>
-                  </li>
-                
-                </ul>
-              </div>
-            </div>
-            <div className="col-lg-2 col-md-6 col-sm-12">
-              <div className="footer-list-wrapper">
-                <div
-                  id="f-myac"
-                  className="footer-title def-funderline ftitle-myA posr"
+                  Tất cả sản phẩm
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/Home"
+                  className="text-sm text-[color:var(--theme-text-muted)] transition hover:text-[color:var(--theme-text)]"
                 >
-                  <h5 className="active">Tài khoản của tôi</h5>
-                </div>
-                <ul className="footer-list-text jscroll-myac">
-                  <li>
-                    <a href="/orderClient" title="My orders">
-                      Lịch sử đơn hàng{" "}
-                    </a>
-                  </li>
-                 
-                  <li>
-                    <a href="profileDetail" title="My addresses">
-                      Thông tin tài khoản
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="col-lg-2 col-md-6 col-sm-12">
-              <div className="footer-list-wrapper">
-                <div
-                  id="f-cussve"
-                  className="footer-title def-funderline def-funderline2 ftitle-cus posr"
+                  Nổi bật
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h6 className="mb-3 font-semibold">Tài khoản</h6>
+            <ul className="flex flex-col gap-2">
+              <li>
+                <Link
+                  to="/profileDetail"
+                  className="text-sm text-[color:var(--theme-text-muted)] transition hover:text-[color:var(--theme-text)]"
                 >
-                  <h5 className="active">Dịch vụ khách hàng</h5>
-                </div>
-                <ul className="footer-list-text jscroll-cussrve">
-                  <li>
-                    <a href="contact.html" title="Contact us">
-                      Mã giảm giá
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+                  Thông tin cá nhân
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/orderClient"
+                  className="text-sm text-[color:var(--theme-text-muted)] transition hover:text-[color:var(--theme-text)]"
+                >
+                  Lịch sử đơn hàng
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h6 className="mb-3 font-semibold">Liên hệ</h6>
+            <p className="mb-1 text-sm text-[color:var(--theme-text-muted)]">
+              Hotline: 0904 798 514
+            </p>
+            <p className="mb-0 text-sm text-[color:var(--theme-text-muted)]">
+              Email: support@techshop.vn
+            </p>
           </div>
         </div>
       </div>
-
-      <div className="footer-bottom-area">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-4 col-md-6 col-sm-12 footer-bottom-right">
-              <div className="footer-bottom-image">
-                <a>
-                  {/* <img src="../../src/Assets/sport-shop-logo.svg" alt="SportShop" />{" "} */}
-                </a>
-              </div>
-            </div>
-          </div>
+      <div className="border-t border-[color:var(--theme-outline)] py-3">
+        <div className="theme-container text-center text-xs text-[color:var(--theme-text-muted)]">
+          © 2026 Tech Shop. All rights reserved.
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 

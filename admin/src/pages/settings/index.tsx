@@ -39,7 +39,7 @@ const Page: NextPageWithLayout = () => {
                 <h3 className="font-medium">
                   {currentUser?.firstName + " " + currentUser?.lastName}
                 </h3>
-                <p className="text-gray-800 text-sm">{currentUser?.email}</p>
+                <p className="text-sm text-muted-foreground">{currentUser?.email}</p>
               </div>
             </div>
 

@@ -1,19 +1,18 @@
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import "../../src/Assets/orderDetail.css";
+import "../Assets/orderDetail.css";
 import { useCancelOrderMutation, useGetOneOrderQuery } from "../api/order";
 import Cookies from "js-cookie";
-import { Button, Form, Modal, Rate, message } from "antd";
+import { Button, Form, Rate, message } from "antd";
 import { useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { useCreateCommentMutation } from "../api/comment";
 import Swal from "sweetalert2";
 import { useForm } from "antd/es/form/Form";
+import { Modal } from "./ui";
 import {
-  tran,
   translateOrderDeliveryStatus,
   translateOrderPaymentStatus,
   translateOrderStatus,
-  translateOrderStatusslateOrderStatus,
 } from "../utils";
 const sensitiveWords = ["clm", "Buồi", "dmm"];
 const OrderDetail = () => {
@@ -68,7 +67,7 @@ const OrderDetail = () => {
     content?.toLowerCase().includes(word.toLowerCase())
   );
   const navigate = useNavigate();
-  const validateContent = (rule: any, value: any, callback: any) => {
+  const validateContent = (_rule: any, value: any, callback: any) => {
     const containsSensitiveWord = sensitiveWords.some((word) =>
       value?.toLowerCase().includes(word?.toLowerCase())
     );
@@ -103,7 +102,7 @@ const OrderDetail = () => {
       {isLoading ? (
         <div style={{ textAlign: "center", padding: "20px" }}>Đang tải...</div>
       ) : (
-        <div className="container" style={{ marginTop: "20px" }}>
+        <div className="theme-page container" style={{ marginTop: "20px" }}>
           <div className="account-page__content">
             <div id="detail-order">
               <div className="thank-box">
@@ -397,7 +396,7 @@ const OrderDetail = () => {
                                       }
                                       onClick={() => onFinish()}
                                       type="primary"
-                                      className="bg-blue-500"
+                                      className="bg-[color:var(--theme-primary)]"
                                     >
                                       Đánh giá
                                     </Button>

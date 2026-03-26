@@ -25,3 +25,16 @@ If you are developing a production application, we recommend updating the config
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+## Refactor Pattern (Home Pilot)
+
+Applied file: `src/components/Home.tsx`
+
+- Keep legacy business logic in place (`useGetAllProductsQuery`, `getCategories`, `/api/getBanners`).
+- Refactor UI by sections (hero, highlights, products, categories, CTA) following the blueprint concept.
+- Preserve backend contract fields (`_id`, `name`, `images[0].url`, `minPrice`, `maxPrice`).
+- Add local adapter/memo variables in component for presentation mapping; do not modify API service layer.
+- Validate with `npm run build` and smoke-test routes/API:
+  - `GET /api/products?_page=1&_limit=3`
+  - `GET /api/categories`
+  - `GET /Home` (client)

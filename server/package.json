@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "seed": "node scripts/seed.cjs --drop",
+    "seed:add": "node scripts/seed.cjs"
   },
   "keywords": [],
   "author": "",

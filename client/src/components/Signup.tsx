@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useSignupMutation } from "../api/auth";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Card, Input } from "./ui";
 const schema = yup.object().shape({
   firstName: yup.string().required("Họ không được để trống "),
   lastName: yup.string().required("Tên không được để trống"),
@@ -20,6 +21,23 @@ const schema = yup.object().shape({
     .oneOf([yup.ref("password")], "Nhập lại mật khẩu chưa đúng")
     .required("Cần nhập lại mật khẩu"),
 });
+
+type SignupFormValues = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+type SignupApiResponse = {
+  error?: {
+    data?: {
+      message?: string;
+    };
+  };
+};
+
 const Signup = () => {
   const [signup] = useSignupMutation();
   const {
@@ -30,8 +48,8 @@ const Signup = () => {
     resolver: yupResolver(schema),
   });
   const navigate = useNavigate();
-  const onSigup = async (data: any) => {
-    const response: any = await signup(data);
+  const onSigup = async (data: SignupFormValues) => {
+    const response = (await signup(data)) as unknown as SignupApiResponse;
 
     if (!response?.error) {
       Swal.fire("Good job!", "Đăng kí thành công", "success");
@@ -41,97 +59,131 @@ const Signup = () => {
     } else {
       Swal.fire({
         icon: "error",
-        title: response?.error.data.message,
+        title: response?.error?.data?.message ?? "Đăng ký thất bại",
       });
     }
   };
   return (
-    <div className="body">
-      <form onSubmit={handleSubmit(onSigup)}>
-        <div className="login-box">
-          <div className="login-header">
-            <h4>Chào mừng đến với Sportshop</h4>
-            {/* <p>We are happy to have you back!</p> */}
-            <h4>ĐĂNG KÝ</h4>
-          </div>
-          <div className="input-box">
-            <input
+    <main className="theme-page flex items-center justify-center px-4 py-16">
+      <Card className="w-full max-w-md p-8">
+        <div className="text-center mb-10">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 font-bold text-3xl tracking-tighter mb-6"
+          >
+            <span className="text-[color:var(--theme-primary)]">TECH</span>{" "}
+            SHOP
+          </Link>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Tạo tài khoản mới
+          </h2>
+          <p className="text-[color:var(--theme-text-muted)] text-sm mt-2">
+            Tham gia cùng hàng nghìn khách hàng khác
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSigup)} className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-xs font-bold tracking-widest uppercase text-[color:var(--theme-text-muted)]">
+              Họ
+            </label>
+            <Input
               {...register("firstName")}
               type="text"
-              className="input-field"
-              placeholder="Họ"
-              id="First name"
+              placeholder="Nguyễn"
             />
-            <p className="error">
-              {errors.firstName ? errors?.firstName.message : ""}
-            </p>
+            {errors.firstName ? (
+              <p className="text-xs text-[color:var(--theme-secondary)]">
+                {errors.firstName.message}
+              </p>
+            ) : null}
           </div>
-          <div className="input-box">
-            <input
+
+          <div className="space-y-2">
+            <label className="block text-xs font-bold tracking-widest uppercase text-[color:var(--theme-text-muted)]">
+              Tên
+            </label>
+            <Input
               {...register("lastName")}
               type="text"
-              className="input-field"
-              placeholder="Tên"
-              id="Lastname"
+              placeholder="Văn A"
             />
-            <p className="error">
-              {errors.lastName ? errors?.lastName.message : ""}
-            </p>
+            {errors.lastName ? (
+              <p className="text-xs text-[color:var(--theme-secondary)]">
+                {errors.lastName.message}
+              </p>
+            ) : null}
           </div>
-          <div className="input-box">
-            <input
+
+          <div className="space-y-2">
+            <label className="block text-xs font-bold tracking-widest uppercase text-[color:var(--theme-text-muted)]">
+              Email
+            </label>
+            <Input
               {...register("email")}
-              type="text"
-              className="input-field"
-              placeholder="Email"
-              id="email"
+              type="email"
+              placeholder="name@example.com"
             />
-            <p className="error">{errors.email ? errors?.email.message : ""}</p>
+            {errors.email ? (
+              <p className="text-xs text-[color:var(--theme-secondary)]">
+                {errors.email.message}
+              </p>
+            ) : null}
           </div>
-          <div className="input-box">
-            <input
+
+          <div className="space-y-2">
+            <label className="block text-xs font-bold tracking-widest uppercase text-[color:var(--theme-text-muted)]">
+              Mật khẩu
+            </label>
+            <Input
               {...register("password")}
               type="password"
-              className="input-field"
-              placeholder="Mật khẩu"
-              id="password"
+              placeholder="••••••••"
             />
-            <p className="error">
-              {errors.password ? errors?.password.message : ""}
-            </p>
+            {errors.password ? (
+              <p className="text-xs text-[color:var(--theme-secondary)]">
+                {errors.password.message}
+              </p>
+            ) : null}
           </div>
 
-          <div className="input-box">
-            <input
+          <div className="space-y-2">
+            <label className="block text-xs font-bold tracking-widest uppercase text-[color:var(--theme-text-muted)]">
+              Nhập lại mật khẩu
+            </label>
+            <Input
               {...register("confirmPassword")}
               type="password"
-              className="input-field"
-              placeholder="Nhập lại mật khẩu"
+              placeholder="••••••••"
             />
-            <p className="error">
-              {errors.confirmPassword ? errors?.confirmPassword.message : ""}
-            </p>
+            {errors.confirmPassword ? (
+              <p className="text-xs text-[color:var(--theme-secondary)]">
+                {errors.confirmPassword.message}
+              </p>
+            ) : null}
           </div>
 
-          <div className="forgot">
-            <section>
-              <a href="/forgot" className="forgot-link">
-                Quên mật khẩu?
-              </a>
-            </section>
-          </div>
-          <div className="input-box">
-            {/* <input type="submit" className="input-submit" /> */}
-            <button type="submit" className="input-submit">Đăng ký</button>
-          </div>
-          <div className="sign-up">
-            <p>
-              Bạn đã có tài khoản?  <a href="/signin">Đăng nhập</a>
-            </p>
-          </div>
-        </div>
-      </form>
-    </div>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full"
+          >
+            Đăng ký
+          </Button>
+
+          <p className="text-center text-[color:var(--theme-text-muted)] text-sm mt-2">
+            Đã có tài khoản?{" "}
+            <Link
+              to="/signin"
+              className="font-semibold text-[color:var(--theme-primary)] hover:underline"
+            >
+              Đăng nhập ngay
+            </Link>
+          </p>
+        </form>
+      </Card>
+    </main>
   );
 };
 

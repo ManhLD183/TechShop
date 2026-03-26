@@ -3,7 +3,7 @@ import { useGetAllProductsQuery } from "../api/product";
 import { getCategories } from "../api/category";
 import { useNavigate } from "react-router-dom";
 import { Pagination, Rate } from "antd";
-import "../../../client/src/Assets/css/bao.css";
+import "../Assets/CSS/bao.css";
 const Shops = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [ishandleSortVisible, setIsSortVisible] = useState(false);
@@ -49,7 +49,7 @@ const Shops = () => {
     return formattedPrice;
   };
   return (
-    <div>
+    <div className="theme-page">
       <section id="page-header">
       </section>
 

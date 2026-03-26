@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useSigninMutation } from "../api/auth";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { Badge, Button, Card, Input } from "./ui";
 const schema = yup.object().shape({
   email: yup
     .string()
@@ -45,55 +46,78 @@ const Signin = () => {
     }
   };
   return (
-    <div className="body">
-      <form onSubmit={handleSubmit(onSignin)}>
-        <div className="login-box">
-          <div className="login-header">
-            <h4>Chào mừng đến với Sportshop</h4>
-            <p>Chúng tôi rất vui khi bạn trở lại!</p>
-            <h4>ĐĂNG NHẬP</h4>
+    <main className="theme-page flex items-center justify-center px-4 py-16">
+      <Card className="w-full max-w-md p-8">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Badge variant="primary">TECH SHOP</Badge>
           </div>
-          <div className="input-box">
-            <input
+          <h1 className="text-3xl font-bold tracking-tight text-[color:var(--theme-text)]">
+            Đăng nhập
+          </h1>
+          <p className="mt-2 text-sm text-[color:var(--theme-text-muted)]">
+            Chào mừng đến với Sportshop. Chúng tôi rất vui khi bạn trở lại!
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSignin)} className="space-y-5">
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-widest text-[color:var(--theme-text-muted)]">
+              Email
+            </label>
+            <Input
               {...register("email")}
               type="text"
-              className="input-field"
               placeholder="Email"
               id="email"
+              autoComplete="email"
             />
-            <p className="error">{errors.email ? errors?.email.message : ""}</p>
+            <p className="text-sm text-[color:var(--theme-secondary)]">
+              {errors.email ? errors?.email.message : ""}
+            </p>
           </div>
-          <div className="input-box">
-            <input
+
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-widest text-[color:var(--theme-text-muted)]">
+              Mật khẩu
+            </label>
+            <Input
               {...register("password")}
               type="password"
-              className="input-field"
               placeholder="Mật khẩu"
               id="password"
+              autoComplete="current-password"
             />
-            <p className="error">
+            <p className="text-sm text-[color:var(--theme-secondary)]">
               {errors.password ? errors?.password.message : ""}
             </p>
           </div>
-          <div className="forgot">
-            <section>
-              <a href="/forgot" className="forgot-link">
-                Quên mật khẩu?
-              </a>
-            </section>
+
+          <div className="flex justify-end">
+            <a
+              href="/forgot"
+              className="text-sm font-semibold text-[color:var(--theme-primary)] hover:underline"
+            >
+              Quên mật khẩu?
+            </a>
           </div>
-          <div className="input-box">
-            {/* <input type="submit" className="input-submit" /> */}
-            <button type="submit" className="input-submit">Đăng nhập</button>
-          </div>
-          <div className="sign-up">
-            <p>
-              Bạn chưa có tài khoản? <a href="/signup">Đăng ký</a>
-            </p>
-          </div>
-        </div>
-      </form>
-    </div>
+
+          <Button type="submit" className="w-full" variant="primary">
+            Đăng nhập
+          </Button>
+
+          <p className="text-center text-sm text-[color:var(--theme-text-muted)] pt-2">
+            Bạn chưa có tài khoản?{" "}
+            <a
+              href="/signup"
+              className="font-semibold text-[color:var(--theme-primary)] hover:underline"
+            >
+              Đăng ký
+            </a>
+          </p>
+        </form>
+      </Card>
+    </main>
   );
 };
 export default Signin;
