@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-background: #131313;
+  --color-surface: #131313;
+  --color-surface-low: #1c1b1b;
+  --color-surface-high: #2a2a2a;
+  --color-surface-highest: #353534;
+  
+  --color-primary: #b1c7f3;
+  --color-primary-container: #0b2447;
+  
+  --color-secondary: #ffb59c;
+  --color-secondary-container: #fa5c1c;
+  
+  --color-tertiary: #00dce5;
+  --color-tertiary-fixed: #63f7ff;
+  
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-variant: #c4c6cf;
+  
+  --color-outline-variant: rgba(68, 71, 78, 0.15);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-sans antialiased;
+  }
+}
+
+.glass-effect {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.bioluminescent-glow {
+  box-shadow: 0 0 20px rgba(0, 220, 229, 0.2);
+}
+
+.orange-glow {
+  box-shadow: 0 0 25px rgba(250, 92, 28, 0.4);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
