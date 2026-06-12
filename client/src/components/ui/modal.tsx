@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Modal as AntModal } from "antd";
 import type { ModalProps as AntModalProps } from "antd";
 import { cn } from "./cn";

@@ -12,18 +12,17 @@ import {
   FormMessage,
   UncontrolledFormMessage,
 } from "@/components/ui/form";
-
 import { AlertCircle, Trash2, UploadCloud } from "lucide-react";
 import { CreateProductVariantDialog } from "./create-product-variant-dialog";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, generateImei } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export const ProductVariants = () => {
   const form = useFormContext<Inputs>();
   const [open, setOpen] = useState(false);
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: "variants",
     control: form.control,
   });
@@ -33,15 +32,16 @@ export const ProductVariants = () => {
 
   return (
     <div>
-      <h3 className="mt-4 font-medium">Biến thể</h3>
+      <h3 className="mt-4 font-medium">Bien the</h3>
 
       <div className="mt-2">
-        <div className="grid grid-cols-[80px_1fr_160px_160px_160px_40px] gap-2">
-          <Label>Ảnh</Label>
-          <Label>Tên</Label>
-          <Label>Giá</Label>
+        <div className="grid grid-cols-[80px_1fr_140px_140px_160px_230px_40px] gap-2">
+          <Label>Anh</Label>
+          <Label>Ten</Label>
+          <Label>Gia</Label>
           <Label>Kho</Label>
           <Label>SKU</Label>
+          <Label>IMEI</Label>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ export const ProductVariants = () => {
           return (
             <div
               key={field.id}
-              className="grid grid-cols-[80px_1fr_160px_160px_160px_40px] gap-2"
+              className="grid grid-cols-[80px_1fr_140px_140px_160px_230px_40px] gap-2"
             >
               <Controller
                 control={form.control}
@@ -59,7 +59,7 @@ export const ProductVariants = () => {
                   return (
                     <div>
                       <label
-                        htmlFor={`imgae-${index}`}
+                        htmlFor={`image-${index}`}
                         className="group relative mt-1 flex h-[80px] w-[80px] cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
                       >
                         <div
@@ -69,12 +69,9 @@ export const ProductVariants = () => {
                               : "group-hover:bg-gray-50"
                           }`}
                         >
-                          <UploadCloud
-                            className={`h-5 w-5 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95`}
-                          />
+                          <UploadCloud className="h-5 w-5 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95" />
                         </div>
                         {field.value && (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={field.value}
                             alt="Preview"
@@ -84,7 +81,7 @@ export const ProductVariants = () => {
                       </label>
                       <div className="mt-1 flex rounded-md shadow-sm">
                         <input
-                          id={`imgae-${index}`}
+                          id={`image-${index}`}
                           type="file"
                           accept="image/*"
                           className="sr-only"
@@ -102,8 +99,10 @@ export const ProductVariants = () => {
                                 );
                               } else {
                                 const reader = new FileReader();
-                                reader.onload = (e) => {
-                                  field.onChange(e.target?.result as string);
+                                reader.onload = (event) => {
+                                  field.onChange(
+                                    event.target?.result as string
+                                  );
                                 };
                                 reader.readAsDataURL(file);
                               }
@@ -170,6 +169,7 @@ export const ProductVariants = () => {
                   </FormControl>
                 </FormItem>
               </div>
+
               <div className="flex items-center">
                 <FormItem>
                   <FormControl>
@@ -191,7 +191,7 @@ export const ProductVariants = () => {
                               ?.message &&
                               "border-red-500 focus-visible:ring-red-500"
                           )}
-                          placeholder="Price..."
+                          placeholder="Inventory..."
                         />
                       </TooltipTrigger>
                       <TooltipContent className="mb-2 bg-white border border-gray-200 shadow-md">
@@ -210,6 +210,7 @@ export const ProductVariants = () => {
                   <FormMessage />
                 </FormItem>
               </div>
+
               <div className="flex items-center">
                 <FormItem>
                   <FormControl>
@@ -221,6 +222,37 @@ export const ProductVariants = () => {
                   <FormMessage />
                 </FormItem>
               </div>
+
+              <div className="flex items-center">
+                <FormItem>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="text"
+                        {...form.register(`variants.${index}.imei`)}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="px-3"
+                        onClick={() => {
+                          form.setValue(
+                            `variants.${index}.imei`,
+                            generateImei()
+                          );
+                          form.clearErrors(`variants.${index}.imei`);
+                        }}
+                      >
+                        <span className="whitespace-nowrap text-xs">
+                          Tao ngau nhien
+                        </span>
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </div>
+
               <div className="flex items-center">
                 <Button
                   type="button"
@@ -245,7 +277,7 @@ export const ProductVariants = () => {
           .getValues("options")
           .every((item) => !item.name.length || !item.values.length)}
       >
-        Thêm biến thể
+        Them bien the
       </Button>
 
       <UncontrolledFormMessage

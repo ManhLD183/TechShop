@@ -57,10 +57,10 @@ const CartItem = ({ item }: any) => {
     }).format(Number(price));
   }
   return (
-    <tr>
+    <tr className="cart-page__item-row">
       <td>
         <button
-          className="remove__item__product"
+          className="remove__item__product cart-page__remove-btn"
           style={{
             cursor: "pointer",
             outline: "none",
@@ -84,7 +84,7 @@ const CartItem = ({ item }: any) => {
             stroke-linecap="round"
             stroke-linejoin="round"
             className="lucide lucide-x-circle"
-            style={{ color: "#757474" }}
+            style={{ color: "var(--theme-text-muted)" }}
           >
             <circle cx="12" cy="12" r="10" />
             <path d="m15 9-6 6" />
@@ -93,14 +93,18 @@ const CartItem = ({ item }: any) => {
         </button>
       </td>
       <td>
-        <img src={`${item?.image}`} alt="" />
+        <img
+          className="cart-page__item-image"
+          src={`${item?.image}`}
+          alt={item?.productName}
+        />
       </td>
-      <td>
+      <td className="cart-page__item-name">
         {item?.productName} -- {item?.productVariantName}
       </td>
       <td>{formatPrice(item?.productVariantPrice)}</td>
 
-      <td>
+      <td className="cart-page__item-qty">
         <div className="box__crement">
           <button
             style={{ cursor: "pointer" }}
@@ -178,7 +182,7 @@ const CartItem = ({ item }: any) => {
         </div>
       </td>
 
-      <td>
+      <td className="cart-page__item-total">
         <div className="priceAll">
           {formatPrice(item?.productVariantPrice * Number(item?.quantity))}
         </div>

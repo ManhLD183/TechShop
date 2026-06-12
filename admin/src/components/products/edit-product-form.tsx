@@ -4,14 +4,8 @@ import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
-import {
-  UploadButton,
-  UploadDropzone,
-  generateRandomString,
-  isArrayOfFile,
-} from "@/lib/utils";
+import { generateImei, generateRandomString } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -26,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -43,6 +36,7 @@ import { OurFileRouter } from "@/lib/uploadthing";
 import { Product } from "@/types/base";
 import { useCategoriesQuery } from "@/services/categories/categories-query";
 import { useProductUpdateMutation } from "@/services/products/product-update-mutation";
+import { queryClient } from "@/lib/react-query";
 import slugify from "@sindresorhus/slugify";
 import DescriptionGenerationAI from "./description-generation-ai";
 
@@ -68,6 +62,7 @@ const formSchema = z.object({
     z.object({
       id: z.string(),
       sku: z.string(),
+      imei: z.string().trim(),
       name: z.string(),
       price: z.number(),
       inventory: z.number(),
@@ -78,6 +73,11 @@ const formSchema = z.object({
 });
 
 type Inputs = z.infer<typeof formSchema>;
+type UploadedImage = {
+  publicId: string;
+  name: string;
+  url: string;
+};
 
 interface UpdateProductFormProps {
   product: Product;
@@ -88,7 +88,8 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
   const [files, setFiles] = React.useState<FileWithPreview[] | null>(null);
   const [upload, setUpload] = React.useState(false);
   const updateProductMutation = useProductUpdateMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
       router.push("/products");
     },
   });
@@ -104,12 +105,20 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
           });
           const fileWithPreview = Object.assign(file, {
             preview: image.url,
+            existingImage: {
+              name: image.name,
+              url: image.url,
+              publicId: image.publicId,
+            },
           });
 
           return fileWithPreview;
         })
       );
+      return;
     }
+
+    setFiles(null);
   }, [product]);
 
   const { isUploading, startUpload } = useUploadThing("imageUploader");
@@ -127,6 +136,7 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
       variants: product.productVariantIds.map((variant) => ({
         id: variant._id,
         sku: variant.sku,
+        imei: variant.imei?.trim() || generateImei(),
         name: variant.name,
         price: variant.price,
         inventory: variant.inventory,
@@ -137,26 +147,34 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
   });
 
   async function onSubmit(data: Inputs) {
-    const newFiles =
-      files?.filter(
-        (file) =>
-          product.images?.find((image) => image.name === file.name) ===
-          undefined
-      ) ?? [];
+    const currentFiles = files ?? [];
+    const filesToUpload = currentFiles.filter((file) => !file.existingImage);
 
     setUpload(true);
-    const images = isArrayOfFile(newFiles)
-      ? await startUpload(newFiles).then((res) => {
-          const formattedImages = res?.map((image) => ({
-            publicId: image.key,
-            name: image.key.split("_")[1] ?? image.key,
-            url: image.url,
-          }));
-          return formattedImages ?? null;
-        })
-      : null;
+    const uploadedImages: UploadedImage[] =
+      filesToUpload.length > 0
+        ? await startUpload(filesToUpload).then((res) => {
+            return (
+              res?.map((image) => ({
+                publicId: image.key,
+                name: image.key.split("_")[1] ?? image.key,
+                url: image.url,
+              })) ?? []
+            );
+          })
+        : [];
 
     setUpload(false);
+
+    const uploadedImagesByPreview = new Map(
+      filesToUpload.map((file, index) => [file.preview, uploadedImages[index]])
+    );
+
+    const nextImages = currentFiles
+      .map(
+        (file) => file.existingImage ?? uploadedImagesByPreview.get(file.preview)
+      )
+      .filter((image): image is UploadedImage => Boolean(image));
 
     updateProductMutation.mutate({
       id: product._id,
@@ -165,23 +183,12 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
       description: data.description,
       productCode: data.productCode,
       categoryId: data.collectionId,
-      images:
-        newFiles.length > 0 && images
-          ? [
-              ...product.images.map((item) => ({
-                publicId: item.publicId,
-                name: item.name,
-                url: item.url,
-              })),
-              ...images,
-            ].map((image) => ({
-              name: image.name,
-              url: image.url,
-              publicId: image.publicId,
-            }))
-          : product.images,
+      images: nextImages,
       options: data.options,
-      variants: data.variants,
+      variants: data.variants.map((item) => ({
+        ...item,
+        imei: item.imei.trim() || generateImei(),
+      })),
     });
   }
 
@@ -194,14 +201,14 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
         <Separator />
 
         <div>
-          <h1 className="font-semibold text-lg">Thông tin chung</h1>
+          <h1 className="font-semibold text-lg">Thong tin chung</h1>
           <p className="text-sm text-slate-500 mb-4">
-            Để bắt đầu bán hàng, tất cả những gì bạn cần là tên và giá.
+            De bat dau ban hang, ban can ten va gia san pham.
           </p>
 
           <div className="space-y-4">
             <FormItem>
-              <FormLabel>Tên sản phẩm</FormLabel>
+              <FormLabel>Ten san pham</FormLabel>
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.name}
@@ -217,7 +224,7 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
 
             <FormItem>
               <div className="flex items-center gap-1">
-                <FormLabel>Mô tả</FormLabel>
+                <FormLabel>Mo ta</FormLabel>
                 <DescriptionGenerationAI />
               </div>
               <FormControl>
@@ -235,15 +242,13 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
 
             <div className="flex items-end gap-2">
               <FormItem className="flex-1">
-                <FormLabel>Mã sản phẩm</FormLabel>
+                <FormLabel>Ma san pham</FormLabel>
                 <FormControl>
-                  <FormControl>
-                    <Input
-                      aria-invalid={!!form.formState.errors.productCode}
-                      placeholder="SP-DSU43ID"
-                      {...form.register("productCode")}
-                    />
-                  </FormControl>
+                  <Input
+                    aria-invalid={!!form.formState.errors.productCode}
+                    placeholder="SP-DSU43ID"
+                    {...form.register("productCode")}
+                  />
                 </FormControl>
                 <UncontrolledFormMessage
                   message={form.formState.errors.description?.message}
@@ -255,7 +260,7 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
                   form.setValue("productCode", `SP-${generateRandomString()}`);
                 }}
               >
-                Tạo ngẫu nhiên
+                Tao ngau nhien
               </Button>
             </div>
 
@@ -264,7 +269,7 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
               name="collectionId"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Danh mục</FormLabel>
+                  <FormLabel>Danh muc</FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
@@ -297,9 +302,9 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
         <Separator />
 
         <div>
-          <h1 className="font-semibold text-lg">Biến thể</h1>
+          <h1 className="font-semibold text-lg">Bien the</h1>
           <p className="text-sm text-slate-500 mb-4">
-            Thêm biến thể cho sản phẩm này.
+            Them bien the cho san pham nay.
           </p>
 
           <ProductOptions />
@@ -310,12 +315,12 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
         <Separator />
 
         <div>
-          <h1 className="font-semibold text-lg">Ảnh</h1>
+          <h1 className="font-semibold text-lg">Anh</h1>
           <p className="text-sm text-slate-500 mb-4">
-            Thêm ảnh cho sản phẩm này.
+            Them anh cho san pham nay.
           </p>
           <FormItem className="flex w-full flex-col gap-1.5">
-            <FormLabel>Ảnh</FormLabel>
+            <FormLabel>Anh</FormLabel>
             {files?.length ? (
               <div className="flex items-center gap-2">
                 {files.map((file, i) => (
@@ -355,7 +360,7 @@ export function UpdateProductForm({ product }: UpdateProductFormProps) {
               aria-hidden="true"
             />
           )}
-          Cập nhật sản phẩm
+          Cap nhat san pham
           <span className="sr-only">Update product</span>
         </Button>
       </form>

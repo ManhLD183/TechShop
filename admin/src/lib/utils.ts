@@ -52,6 +52,35 @@ export const generateRandomString = (length = 6) => {
   return result;
 };
 
+const calculateLuhnCheckDigit = (digits: string) => {
+  let sum = 0;
+
+  for (let i = 0; i < digits.length; i++) {
+    let value = Number(digits[i]);
+
+    if (i % 2 === 1) {
+      value *= 2;
+      if (value > 9) {
+        value -= 9;
+      }
+    }
+
+    sum += value;
+  }
+
+  return (10 - (sum % 10)) % 10;
+};
+
+export const generateImei = () => {
+  let base = "";
+
+  for (let i = 0; i < 14; i++) {
+    base += Math.floor(Math.random() * 10).toString();
+  }
+
+  return `${base}${calculateLuhnCheckDigit(base)}`;
+};
+
 export function formatPrice(
   price: number | string,
   options: {

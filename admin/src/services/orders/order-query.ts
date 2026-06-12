@@ -20,6 +20,7 @@ export type OrderResponse = Omit<
     productName: string;
     productVariantName: string;
     productVariantPrice: number;
+    productVariantImei?: string;
     image: string;
     _id: string;
   }[];

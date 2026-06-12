@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   UncontrolledFormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -34,7 +32,7 @@ import { ProductVariants } from "./product-variants-section";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProductCreateMutation } from "@/services/products/product-create-mutation";
 import { toast } from "sonner";
-import { generateRandomString, isArrayOfFile } from "@/lib/utils";
+import { generateImei, generateRandomString, isArrayOfFile } from "@/lib/utils";
 import { OurFileRouter } from "@/lib/uploadthing";
 import { useCategoriesQuery } from "@/services/categories/categories-query";
 import slugify from "@sindresorhus/slugify";
@@ -92,6 +90,7 @@ const formSchema = z.object({
         }),
         options: z.array(z.object({ name: z.string(), value: z.string() })),
         sku: z.string().trim(),
+        imei: z.string().trim(),
         image: z.string(),
       })
     )
@@ -146,6 +145,7 @@ export function AddProductForm() {
         options: data.options,
         variants: data.variants.map((item) => ({
           ...item,
+          imei: item.imei.trim() || generateImei(),
           options: item.options.map((option) => option.value),
         })),
         images:
@@ -159,7 +159,7 @@ export function AddProductForm() {
       {
         onSuccess: () => {
           router.push("/products");
-          toast.success("Thêm sản phẩm thành công!");
+          toast.success("Them san pham thanh cong!");
         },
       }
     );
@@ -173,14 +173,14 @@ export function AddProductForm() {
       >
         <Separator />
         <div>
-          <h1 className="font-semibold text-xl">Thông tin chung</h1>
+          <h1 className="font-semibold text-xl">Thong tin chung</h1>
           <p className="text-sm text-slate-500 mb-4">
-            Để bắt đầu bán hàng, tất cả những gì bạn cần là tên và giá.
+            De bat dau ban hang, ban can ten va gia san pham.
           </p>
 
           <div className="space-y-4">
             <FormItem>
-              <FormLabel>Tên sản phẩm</FormLabel>
+              <FormLabel>Ten san pham</FormLabel>
               <FormControl>
                 <Input
                   aria-invalid={!!form.formState.errors.name}
@@ -195,7 +195,7 @@ export function AddProductForm() {
 
             <FormItem>
               <div className="flex items-center gap-2">
-                <FormLabel>Mô tả</FormLabel>
+                <FormLabel>Mo ta</FormLabel>
                 <NoSSRDescriptionGenerationAI />
               </div>
               <FormControl>
@@ -212,7 +212,7 @@ export function AddProductForm() {
 
             <div className="flex gap-2">
               <FormItem className="flex-1">
-                <FormLabel>Mã sản phẩm</FormLabel>
+                <FormLabel>Ma san pham</FormLabel>
                 <FormControl>
                   <Input
                     aria-invalid={!!form.formState.errors.productCode}
@@ -232,7 +232,7 @@ export function AddProductForm() {
                   form.clearErrors("productCode");
                 }}
               >
-                Tạo mã ngẫu nhiên
+                Tao ma ngau nhien
               </Button>
             </div>
 
@@ -241,7 +241,7 @@ export function AddProductForm() {
               name="collectionId"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Danh mục</FormLabel>
+                  <FormLabel>Danh muc</FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
@@ -276,7 +276,7 @@ export function AddProductForm() {
               name="status"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Trạng thái</FormLabel>
+                  <FormLabel>Trang thai</FormLabel>
                   <FormControl>
                     <Select
                       defaultValue="Active"
@@ -307,9 +307,9 @@ export function AddProductForm() {
         <Separator />
 
         <div>
-          <h1 className="font-semibold text-lg">Biến thể</h1>
+          <h1 className="font-semibold text-lg">Bien the</h1>
           <p className="text-sm text-slate-500 mb-4">
-            Thêm những biến thể cho sản phẩm này.
+            Them cac bien the cho san pham nay.
           </p>
 
           <ProductOptions />
@@ -320,13 +320,13 @@ export function AddProductForm() {
         <Separator />
 
         <div>
-          <h1 className="font-semibold text-lg">Ảnh</h1>
+          <h1 className="font-semibold text-lg">Anh</h1>
           <p className="text-sm text-slate-500 mb-4">
-            Thêm ảnh cho sản phẩm này.
+            Them anh cho san pham nay.
           </p>
 
           <FormItem className="flex w-full flex-col gap-1.5">
-            <FormLabel>Ảnh</FormLabel>
+            <FormLabel>Anh</FormLabel>
             {files?.length ? (
               <div className="flex items-center gap-2">
                 {files.map((file, i) => (
@@ -369,7 +369,7 @@ export function AddProductForm() {
               aria-hidden="true"
             />
           )}
-          Thêm sản phẩm
+          Them san pham
           <span className="sr-only">Add Product</span>
         </Button>
       </form>

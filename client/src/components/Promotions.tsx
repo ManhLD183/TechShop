@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiArrowRight, FiGift, FiPercent, FiRefreshCcw, FiShield, FiTruck, FiZap } from "react-icons/fi";
 import { useGetAllProductsQuery } from "../api/product";
@@ -79,7 +78,7 @@ export default function Promotions() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <div className="flex items-center gap-4 bg-white/5 border border-[color:var(--theme-outline)] px-8 py-4 rounded-3xl backdrop-blur-xl">
+            <div className="flex items-center gap-4 rounded-3xl border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.76)] px-8 py-4 shadow-[0_18px_40px_rgba(38,52,77,0.08)] backdrop-blur-xl">
               <FiRefreshCcw
                 className="text-[color:var(--theme-primary)]"
                 size={24}
@@ -94,7 +93,7 @@ export default function Promotions() {
             <button
               type="button"
               onClick={() => navigate("/Home")}
-              className="px-10 py-5 bg-[color:var(--theme-primary)] text-[#0f172a] font-bold rounded-3xl hover:brightness-110 transition-all shadow-2xl shadow-[color:rgba(177,199,243,0.25)] flex items-center gap-2"
+              className="flex items-center gap-2 rounded-3xl bg-[color:var(--theme-primary)] px-10 py-5 font-bold text-white shadow-[0_20px_40px_rgba(49,95,214,0.2)] transition-all hover:brightness-110"
             >
               Săn Deal Ngay <FiArrowRight size={20} />
             </button>
@@ -108,7 +107,7 @@ export default function Promotions() {
           {categories.map((item, idx) => (
             <div
               key={idx}
-              className="p-10 bg-white/5 border border-[color:var(--theme-outline)] rounded-[3rem] hover:border-[color:rgba(177,199,243,0.45)] transition-all group"
+              className="rounded-[3rem] border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.84)] p-10 shadow-[0_18px_44px_rgba(38,52,77,0.08)] transition-all group hover:border-[color:rgba(49,95,214,0.28)]"
             >
               <div
                 className={`w-16 h-16 ${item.iconBgClass} rounded-2xl flex items-center justify-center mb-8`}
@@ -144,10 +143,10 @@ export default function Promotions() {
             {flashSaleProducts.map((product, idx) => (
               <div
                 key={product._id ?? idx}
-                className="group relative bg-white/5 border border-[color:var(--theme-outline)] rounded-[3rem] overflow-hidden hover:border-[color:rgba(177,199,243,0.45)] transition-all duration-500"
+                className="group relative overflow-hidden rounded-[3rem] border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.84)] shadow-[0_18px_44px_rgba(38,52,77,0.08)] transition-all duration-500 hover:border-[color:rgba(49,95,214,0.28)]"
               >
                 <div className="absolute top-6 left-6 z-10">
-                  <div className="px-4 py-2 bg-[color:rgba(255,181,156,0.25)] text-[#0f172a] text-xs font-bold rounded-full shadow-lg">
+                  <div className="rounded-full border border-[color:rgba(212,123,76,0.16)] bg-[color:rgba(255,181,156,0.28)] px-4 py-2 text-xs font-bold text-[color:#9a4f25] shadow-[0_12px_24px_rgba(212,123,76,0.12)]">
                     -20% OFF
                   </div>
                 </div>
@@ -173,7 +172,7 @@ export default function Promotions() {
                   <button
                     type="button"
                     onClick={() => navigate(`/products/${product._id}`)}
-                    className="w-full py-5 bg-white/5 border border-[color:var(--theme-outline)] rounded-2xl text-sm font-bold text-[color:var(--theme-text)] hover:brightness-110 transition-all flex items-center justify-center gap-3 group/btn"
+                    className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[color:rgba(49,95,214,0.14)] bg-[color:rgba(49,95,214,0.08)] py-5 text-sm font-bold text-[color:var(--theme-primary)] transition-all hover:bg-[color:rgba(49,95,214,0.12)]"
                   >
                     <FiTruck size={20} className="group-hover/btn:scale-110 transition-transform" />
                     Mua Ngay
@@ -185,11 +184,11 @@ export default function Promotions() {
         </section>
 
         {/* Newsletter / Promo Signup */}
-        <section className="relative p-12 md:p-20 bg-[color:var(--theme-primary)] rounded-[4rem] overflow-hidden text-center">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/pattern/1920/1080')] opacity-10 mix-blend-overlay" />
+        <section className="relative overflow-hidden rounded-[4rem] border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.9)] p-12 text-center shadow-[0_24px_56px_rgba(38,52,77,0.1)] md:p-20">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(49,95,214,0.14),rgba(212,123,76,0.08),transparent)]" />
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 uppercase">ĐĂNG KÝ NHẬN TIN</h2>
-            <p className="text-[#0f172a] text-lg mb-12">
+            <p className="text-[color:var(--theme-text-muted)] text-lg mb-12">
               Nhận ngay voucher giảm giá cho đơn hàng đầu tiên và cập nhật sớm nhất các chương trình khuyến mãi.
             </p>
 
@@ -197,14 +196,14 @@ export default function Promotions() {
               <input
                 type="email"
                 placeholder="Nhập email của bạn..."
-                className="flex-grow bg-white/20 border border-white/30 rounded-2xl px-6 py-4 text-[#0f172a] placeholder:text-[#0f172a]/70 focus:outline-none focus:bg-white/30 transition-all"
+                className="flex-grow rounded-2xl border border-[color:var(--theme-outline)] bg-white px-6 py-4 text-[color:var(--theme-text)] placeholder:text-[color:var(--theme-text-muted)] transition-all focus:outline-none focus:ring-2 focus:ring-[color:rgba(49,95,214,0.18)]"
               />
-              <button className="px-10 py-4 bg-[#0f172a] text-[color:var(--theme-primary)] font-bold rounded-2xl hover:brightness-110 transition-colors shadow-xl shadow-black/10">
+              <button className="rounded-2xl bg-[color:var(--theme-primary)] px-10 py-4 font-bold text-white shadow-[0_18px_36px_rgba(49,95,214,0.18)] transition-colors hover:brightness-110">
                 Đăng Ký
               </button>
             </form>
 
-            <p className="mt-6 text-[#0f172a] text-xs flex items-center justify-center gap-2">
+            <p className="mt-6 flex items-center justify-center gap-2 text-xs text-[color:var(--theme-text-muted)]">
               <FiShield size={14} /> Chúng tôi cam kết bảo mật thông tin của bạn.
             </p>
           </div>

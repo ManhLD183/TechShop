@@ -2,6 +2,7 @@ import Product from "../models/product";
 import Category from "../models/category";
 import { productCreateBodySchema } from "../validators/product";
 import ProductVariant from "../models/productVariant";
+import { generateImei } from "../libs/utils";
 
 export const getAll = async (req, res) => {
   try {
@@ -101,6 +102,7 @@ export const create = async (req, res) => {
           price: variant.price,
           inventory: variant.inventory,
           options: variant.options,
+          imei: variant.imei?.trim() || generateImei(),
           productId: product._id,
         });
       })

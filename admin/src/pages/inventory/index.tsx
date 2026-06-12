@@ -170,6 +170,7 @@ const Page: NextPageWithLayout = () => {
                 <TableHead>Sản phẩm</TableHead>
                
                 <TableHead>SKU</TableHead>
+                <TableHead>IMEI</TableHead>
                 <TableHead>Giá</TableHead>
                 <TableHead>Đã có khách đặt</TableHead>
                 <TableHead>Sẵn hàng</TableHead>
@@ -206,6 +207,7 @@ const Page: NextPageWithLayout = () => {
                   </TableCell>
                 
                   <TableCell>{item.sku}</TableCell>
+                  <TableCell>{item.imei || "-"}</TableCell>
                   <TableCell>{formatPrice(item.price)}</TableCell>
                   <TableCell>{item.pendingOrders.length}</TableCell>
                   <TableCell>{item.inventory}</TableCell>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="mt-10 border-t border-[color:var(--theme-outline)] bg-[color:var(--theme-bg)] text-[color:var(--theme-text)]">
+    <footer className="mt-10 border-t border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.76)] text-[color:var(--theme-text)] shadow-[0_-8px_24px_rgba(38,52,77,0.04)] backdrop-blur-xl">
       <div className="theme-container py-10">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>

@@ -205,8 +205,11 @@ const Cart = () => {
                       Đang tải ....
                     </div>
                   ) : (
-                    <section id="cart" className="section-p1 cart__ss">
-                      <table width="100%">
+                    <section
+                      id="cart"
+                      className="section-p1 cart__ss cart-page__table-shell"
+                    >
+                      <table width="100%" className="cart-page__table">
                         <thead>
                           <tr>
                             <td>Xóa</td>
@@ -234,9 +237,12 @@ const Cart = () => {
             <>{carts.message}</>
           )}
           <form onSubmit={handleSubmit(onAddOrder)}>
-            <section id="cart-add" className="section-p1">
-              <div id="subtotal" className="ttnh">
-                <div className="header__checkout__news">
+            <section id="cart-add" className="section-p1 cart-page__checkout">
+              <div
+                id="subtotal"
+                className="ttnh cart-page__panel cart-page__panel--shipping"
+              >
+                <div className="header__checkout__news cart-page__panel-header">
                   <h3>Thông tin nhận hàng</h3>
                   <div className="btn__add__default__adress">
                     <div onClick={showAddressModal}>
@@ -312,7 +318,7 @@ const Cart = () => {
                     </>
                   </Modal>
                 </div>
-                <table>
+                <table className="cart-page__summary-table">
                   <tr>
                     <input
                       {...register("fullName")}
@@ -373,7 +379,7 @@ const Cart = () => {
                     disabled={
                       carts?.length === 0 || !token || isCreateOrderLoading
                     }
-                    className="normal"
+                    className="normal cart-page__submit"
                   >
                     {isCreateOrderLoading && (
                       <svg
@@ -399,9 +405,15 @@ const Cart = () => {
                 </div>
               </div>
 
-              <div id="subtotal">
+              <div
+                id="subtotal"
+                className="cart-page__panel cart-page__panel--summary"
+              >
                 <h3>Thông tin thanh toán</h3>
-                <div onClick={showModal} className="btn__add__default__adress">
+                <div
+                  onClick={showModal}
+                  className="btn__add__default__adress cart-page__voucher-trigger"
+                >
                   <div style={{ padding: "12px" }}>
                     <i className="fas fa-tags"></i> Mã giảm giá
                   </div>
@@ -486,14 +498,14 @@ const Cart = () => {
                     );
                   })}
                 </Modal>
-                <div style={{ display: "flex", padding: "10px" }}>
+                <div className="cart-page__coupon-row">
                   <input
                     placeholder="Nhập mã giảm giá"
                     onChange={onChange}
                     value={code}
-                    style={{ padding: "10px" }}
                   />
                   <button
+                    className="cart-page__coupon-apply"
                     onClick={async (e) => {
                       e.preventDefault();
                       try {
@@ -654,13 +666,9 @@ const Cart = () => {
                       </svg>
                       <span>Phương Thức Thanh Toán</span>
                     </h2>
-                    <div>
+                    <div className="cart-page__payment-options">
                       <div
-                        style={{
-                          display: "flex",
-                          gap: "4px",
-                          alignItems: "center",
-                        }}
+                        className="cart-page__payment-option"
                       >
                         <input
                           id="a1"
@@ -676,12 +684,7 @@ const Cart = () => {
                         </label>
                       </div>
                       <div
-                        style={{
-                          display: "flex",
-                          gap: "4px",
-                          alignItems: "center",
-                          marginTop: "10px",
-                        }}
+                        className="cart-page__payment-option"
                       >
                         <input
                           id="b2"

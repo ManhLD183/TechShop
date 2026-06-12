@@ -2,8 +2,8 @@ import { NavLink, useNavigate, useParams } from "react-router-dom";
 import "../Assets/orderDetail.css";
 import { useCancelOrderMutation, useGetOneOrderQuery } from "../api/order";
 import Cookies from "js-cookie";
-import { Button, Form, Rate, message } from "antd";
-import { useState } from "react";
+import { Form, Rate, message } from "antd";
+import { useMemo, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { useCreateCommentMutation } from "../api/comment";
 import Swal from "sweetalert2";
@@ -14,7 +14,11 @@ import {
   translateOrderPaymentStatus,
   translateOrderStatus,
 } from "../utils";
-const sensitiveWords = ["clm", "Buồi", "dmm"];
+
+const sensitiveWords = ["clm", "buoi", "dmm"];
+const fallbackProductImage = new URL("../Assets/product2.jpg", import.meta.url)
+  .href;
+
 const OrderDetail = () => {
   const { id }: any = useParams();
   const token = Cookies.get("token");
@@ -22,114 +26,150 @@ const OrderDetail = () => {
   const [cancelOrder] = useCancelOrderMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenReview, setIsModalOpenReview] = useState(false);
-  const [productId, setProductId] = useState();
+  const [productId, setProductId] = useState<string>();
+  const [reviewProductName, setReviewProductName] = useState("");
   const [raiting, setRaiting] = useState<any>(0);
   const [content, setContent] = useState<any>();
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  const showModalReview = () => {
-    setIsModalOpenReview(true);
-  };
-
-  const handleOkReview = () => {
-    form.resetFields();
-    setContent("");
-    setRaiting(0);
-    setIsModalOpenReview(false);
-  };
-
-  const handleCancelReview = () => {
-    form.resetFields();
-    setContent("");
-    setRaiting(0);
-    setIsModalOpenReview(false);
-  };
   const [infoStaff, setInforStaff] = useState<any>("");
-  const formatPrice = (price: any) => {
-    const formattedPrice = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-    return formattedPrice;
-  };
   const [createComment] = useCreateCommentMutation();
   const [form] = useForm();
+  const navigate = useNavigate();
+
+  const order = data?.order;
+
+  const formatPrice = (price: any) =>
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price ?? 0);
+
+  const formatDateTime = (date: string) =>
+    new Date(date).toLocaleString("vi-VN");
+
+  const paymentMethodLabel =
+    order?.typePayment === "Direct" ? "Trực tiếp khi nhận hàng" : "Online";
+
+  const canCancelOrder =
+    order?.deliveryStatus !== "Shipping" &&
+    order?.status !== "Completed" &&
+    order?.status !== "Canceled";
+
   const containsSensitiveWord = sensitiveWords.some((word) =>
     content?.toLowerCase().includes(word.toLowerCase())
   );
-  const navigate = useNavigate();
+
+  const totalProducts = useMemo(
+    () =>
+      order?.items?.reduce(
+        (total: number, item: any) => total + (item.quantity ?? 0),
+        0
+      ) ?? 0,
+    [order?.items]
+  );
+
   const validateContent = (_rule: any, value: any, callback: any) => {
-    const containsSensitiveWord = sensitiveWords.some((word) =>
-      value?.toLowerCase().includes(word?.toLowerCase())
+    const hasSensitiveWord = sensitiveWords.some((word) =>
+      value?.toLowerCase().includes(word.toLowerCase())
     );
 
-    if (containsSensitiveWord) {
+    if (hasSensitiveWord) {
       callback && callback("Bình luận không được chứa từ ngữ nhạy cảm");
-    } else {
-      callback && callback();
+      return;
     }
+
+    callback && callback();
   };
+
+  const openStaffModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeStaffModal = () => {
+    setIsModalOpen(false);
+    setInforStaff("");
+  };
+
+  const openReviewModal = (item: any) => {
+    setProductId(item.productId?._id);
+    setReviewProductName(item?.productName ?? item.productId?.name ?? "");
+    setIsModalOpenReview(true);
+  };
+
+  const closeReviewModal = () => {
+    form.resetFields();
+    setContent("");
+    setRaiting(0);
+    setProductId(undefined);
+    setReviewProductName("");
+    setIsModalOpenReview(false);
+  };
+
   const onFinish = async () => {
-    if (containsSensitiveWord) return;
+    if (containsSensitiveWord || !productId) return;
+
     const comment: any = await createComment({
       token,
       comment: { raiting, content, productId, orderId: id },
     });
+
     if (!comment?.error) {
       Swal.fire("Good job!", comment.data.message, "success");
       form.resetFields();
       setContent("");
       setRaiting(0);
       navigate(`/products/${productId}`);
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: comment?.error.data.message,
-      });
+      return;
     }
+
+    Swal.fire({
+      icon: "error",
+      title: comment?.error.data.message,
+    });
   };
+
   return (
     <>
       {isLoading ? (
         <div style={{ textAlign: "center", padding: "20px" }}>Đang tải...</div>
       ) : (
-        <div className="theme-page container" style={{ marginTop: "20px" }}>
-          <div className="account-page__content">
-            <div id="detail-order">
-              <div className="thank-box">
-                <div className="detail-order-wrapper">
-                  <div className="detail-order">
-                    <h1
-                      className="detail-order-heading"
-                      style={{ margin: "0px" }}
-                    >
-                      Thông tin đơn hàng {data?.order?.code}
+        <div className="theme-page">
+          <div className="theme-container order-detail-page">
+            <div className="order-detail-shell">
+              <section className="order-detail-hero">
+                <div className="order-detail-hero__content">
+                  <span className="order-detail-overline">
+                    Chi tiết đơn hàng
+                  </span>
+                  <div className="order-detail-heading-row">
+                    <h1 className="detail-order-heading">
+                      Đơn hàng {order?.code}
                     </h1>
                     <div className="detail-order-status">
-                      {translateOrderStatus(data?.order?.status)}
+                      {translateOrderStatus(order?.status)}
                     </div>
                   </div>
+                  <p className="order-detail-subtitle">
+                    Theo dõi trạng thái thanh toán, giao hàng và toàn bộ sản
+                    phẩm trong đơn tại một giao diện gọn, dễ đọc hơn.
+                  </p>
+                </div>
 
-                  {data?.order?.deliveryStatus === "Shipping" ||
-                  data?.order?.status === "Completed" ||
-                  data?.order?.status === "Canceled" ? (
-                    ""
-                  ) : (
+                <div className="order-detail-hero__summary">
+                  <div className="order-detail-highlight">
+                    <span>Ngày đặt</span>
+                    <strong>{formatDateTime(order?.createdAt)}</strong>
+                  </div>
+                  <div className="order-detail-highlight">
+                    <span>Tổng thanh toán</span>
+                    <strong>{formatPrice(order?.orderTotalPrice)}</strong>
+                  </div>
+                  {canCancelOrder ? (
                     <button
                       className="order-cancel-button"
                       onClick={async () => {
-                        if (confirm("Bạn có muốn hủy đơn hàng không ?")) {
-                          const data: any = await cancelOrder({ token, id });
-                          if (data?.error) {
+                        if (confirm("Bạn có muốn hủy đơn hàng không?")) {
+                          const response: any = await cancelOrder({ token, id });
+                          if (response?.error) {
                             message.error("Bạn không thể hủy đơn hàng");
                           } else {
                             message.success("Hủy đơn hàng thành công");
@@ -139,316 +179,278 @@ const OrderDetail = () => {
                     >
                       Hủy đơn
                     </button>
-                  )}
+                  ) : null}
                 </div>
+              </section>
 
-                <div className="detail-order-info">
-                  <ul className="detail-order-info__list">
-                    <li>
-                      <div className="detail-order-info__title">
-                        Ngày đặt hàng:
-                      </div>
-                      <div className="detail-order-info__content">
-                        {new Date(data?.order?.createdAt).toLocaleString()}
-                      </div>
-                    </li>
-                    <li>
-                      <div className="detail-order-info__title">
-                        Tên người nhận
-                      </div>
-                      <div className="detail-order-info__content">
-                        {data?.order?.fullName}
-                      </div>
-                    </li>
-                    <li>
-                      <div className="detail-order-info__title">
-                        Địa chỉ Email:
-                      </div>
-                      <div className="detail-order-info__content">
-                        {data?.order?.email}
-                      </div>
-                    </li>
-                    <li>
-                      <div className="detail-order-info__title">
-                        Số điện thoại:
-                      </div>
-                      <div className="detail-order-info__content">
-                        {data?.order?.phone}
-                      </div>
-                    </li>
-                    <li>
-                      <div className="detail-order-info__title">
-                        Phương thức thanh toán:
-                      </div>
-                      <div className="detail-order-info__content">
-                        {data?.order?.typePayment === "Direct" &&
-                          "Trực tiếp khi nhận hàng"}
-                        {data?.order?.typePayment === "Online" && "Online"}
-                      </div>
-                    </li>
-                    {data?.order?.discountCode ? (
-                      <li>
-                        <div className="detail-order-info__title">
-                          Mã giảm giá
-                        </div>
-                        <div className="detail-order-info__content">
-                          {data?.order?.discountCode}
-                        </div>
-                      </li>
-                    ) : (
-                      <></>
-                    )}
-                    <li>
-                      <div className="detail-order-info__title">
-                        Trạng thái thanh toán:
-                      </div>
-                      <div className="detail-order-info__content">
-                        <div className="detail-order-status">
-                          {translateOrderPaymentStatus(
-                            data?.order?.paymentStatus
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="detail-order-info__title">
-                        Trạng thái giao hàng:
-                      </div>
-                      <div className="detail-order-info__content">
-                        <div className="detail-order-status">
-                          {translateOrderDeliveryStatus(
-                            data?.order?.deliveryStatus
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <div className="detail-order-info__title">
-                        Nhân viên quản lí đơn:
-                      </div>
-                      <div className="detail-order-info__content">
-                        {data?.order?.managerId?.firstName}{" "}
-                        {data?.order?.managerId?.lastName}{" "}
-                        <Button
-                          type="primary"
+              <div className="order-detail-grid">
+                <section className="order-detail-card">
+                  <div className="order-detail-section__header">
+                    <div>
+                      <span className="order-detail-card__eyebrow">
+                        Thông tin nhận hàng
+                      </span>
+                      <h2>Người nhận và giao hàng</h2>
+                    </div>
+                  </div>
+
+                  <div className="order-detail-info-grid">
+                    <div className="order-info-item">
+                      <span>Tên người nhận</span>
+                      <strong>{order?.fullName}</strong>
+                    </div>
+                    <div className="order-info-item">
+                      <span>Email</span>
+                      <strong>{order?.email}</strong>
+                    </div>
+                    <div className="order-info-item">
+                      <span>Số điện thoại</span>
+                      <strong>{order?.phone}</strong>
+                    </div>
+                    <div className="order-info-item">
+                      <span>Địa chỉ giao hàng</span>
+                      <strong>{order?.address}</strong>
+                    </div>
+                    <div className="order-info-item">
+                      <span>Phương thức thanh toán</span>
+                      <strong>{paymentMethodLabel}</strong>
+                    </div>
+                    <div className="order-info-item">
+                      <span>Mã giảm giá</span>
+                      <strong>{order?.discountCode || "Không sử dụng"}</strong>
+                    </div>
+                    <div className="order-info-item">
+                      <span>Nhân viên quản lý đơn</span>
+                      <div className="order-info-item__action">
+                        <strong>
+                          {order?.managerId?.firstName}{" "}
+                          {order?.managerId?.lastName}
+                        </strong>
+                        <button
+                          type="button"
+                          className="order-detail-inline-button"
                           onClick={() => {
-                            showModal();
-                            setInforStaff(data?.order?.managerId);
+                            openStaffModal();
+                            setInforStaff(order?.managerId);
                           }}
                         >
-                          View
-                        </Button>
-                        <Modal
-                          title="Thông tin nhân viên quản lí đơn"
-                          open={isModalOpen}
-                          onOk={() => {
-                            handleOk();
-                            setInforStaff("");
-                          }}
-                          onCancel={() => {
-                            handleCancel();
-                            setInforStaff("");
-                          }}
-                        >
-                          <p>Số điện thoại: {infoStaff?.phone}</p>
-                          <p>Email: {infoStaff?.email}</p>
-                        </Modal>
+                          Xem
+                        </button>
                       </div>
-                    </li>
-                    <li>
-                      <div className="detail-order-info__title">
-                        Địa chỉ giao hàng:
+                    </div>
+                    {order?.note ? (
+                      <div className="order-info-item order-info-item--full">
+                        <span>Ghi chú</span>
+                        <strong>{order.note}</strong>
                       </div>
-                      <div className="detail-order-info__content">
-                        {data?.order?.address}
-                      </div>
-                    </li>
-                    {data?.oder?.node ? (
-                      <li>
-                        <div className="detail-order-info__title">Ghi chú:</div>
-                        <div className="detail-order-info__content"></div>
-                      </li>
-                    ) : (
-                      <></>
-                    )}
-                  </ul>
-                </div>
+                    ) : null}
+                  </div>
+                </section>
 
-                <div className="grid detail-order-button">
-                  <div className="grid__column">
-                    <div className="order-date"></div>
+                <aside className="order-detail-card order-detail-card--summary">
+                  <span className="order-detail-card__eyebrow">Tổng quan</span>
+                  <h2>Thanh toán và giao hàng</h2>
+
+                  <div className="order-detail-status-stack">
+                    <div className="order-detail-status-panel">
+                      <span>Thanh toán</span>
+                      <div className="detail-order-status">
+                        {translateOrderPaymentStatus(order?.paymentStatus)}
+                      </div>
+                    </div>
+                    <div className="order-detail-status-panel">
+                      <span>Giao hàng</span>
+                      <div className="detail-order-status">
+                        {translateOrderDeliveryStatus(order?.deliveryStatus)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="order-summary-rows">
+                    <div className="order-summary-row">
+                      <span>Tạm tính</span>
+                      <strong>{formatPrice(order?.totalPrice)}</strong>
+                    </div>
+                    <div className="order-summary-row">
+                      <span>Giảm giá</span>
+                      <strong>{formatPrice(order?.couponPrice)}</strong>
+                    </div>
+                    <div className="order-summary-row">
+                      <span>Phí giao hàng</span>
+                      <strong>{formatPrice(order?.shippingPrice)}</strong>
+                    </div>
+                    <div className="order-summary-row order-summary-row--total">
+                      <span>Tổng thanh toán</span>
+                      <strong>{formatPrice(order?.orderTotalPrice)}</strong>
+                    </div>
+                  </div>
+                </aside>
+              </div>
+
+              <section className="order-detail-card order-detail-products">
+                <div className="order-detail-section__header">
+                  <div>
+                    <span className="order-detail-card__eyebrow">
+                      Danh sách sản phẩm
+                    </span>
+                    <h2>Sản phẩm trong đơn</h2>
+                  </div>
+                  <div className="order-detail-products__meta">
+                    {totalProducts} sản phẩm
                   </div>
                 </div>
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Tên sản phẩm</th>
-                      <th>Biến thể</th>
-                      <th>Số lượng</th>
-                      <th>Giá niêm yết</th>
-                      <th className="text-righted">Thành tiền</th>
-                      {data?.order?.status === "Completed" ? (
-                        <>
-                          <th>Đánh giá sản phẩm</th>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data?.order?.items?.map((item: any) => {
-                      return (
-                        <tr>
-                          <td className="text--left">
-                            <div>
-                              <div>
-                                <img
-                                  src={item?.image}
-                                  width={140}
-                                  height={140}
-                                />
-                              </div>
-                              <div style={{ marginLeft: "8px" }}>
-                                <h4>
-                                  {item?.productName ?? item.productId.name}
-                                </h4>
-                              </div>
-                            </div>
-                          </td>
-                          <td>{item?.productVariantName}</td>
-                          <td>{item.quantity}</td>
-                          <td>{formatPrice(item?.productVariantPrice)}</td>
-                          <td>
-                            {formatPrice(
-                              item?.quantity * item?.productVariantPrice
-                            )}
-                          </td>
-                          {data?.order?.status === "Completed" ? (
-                            <td>
-                              {item?.isReview === true ? (
-                                <>
-                                  Đã đánh giá{" "}
-                                  <NavLink
-                                    to={`/products/${item.productId._id}`}
-                                  >
-                                    <Button>View</Button>
-                                  </NavLink>
-                                </>
-                              ) : (
-                                <Button
-                                  type="primary"
-                                  onClick={() => {
-                                    showModalReview();
-                                    setProductId(item.productId._id);
-                                  }}
-                                >
-                                  Đánh giá
-                                </Button>
-                              )}
-                              <Modal
-                                title="Đánh giá sản phẩm"
-                                open={isModalOpenReview}
-                                onOk={() => {
-                                  handleOkReview();
-                                }}
-                                onCancel={() => {
-                                  handleCancelReview();
-                                }}
-                              >
-                                <Form form={form}>
-                                  <div className="box_rating">
-                                    <Form.Item name="rating" initialValue={0}>
-                                      <Rate
-                                        value={raiting}
-                                        onChange={(value) => setRaiting(value)}
-                                      />
-                                    </Form.Item>
-                                  </div>
-                                  <Form.Item
-                                    name="review"
-                                    rules={[
-                                      {
-                                        required: true,
-                                        message:
-                                          "Không được bỏ trống bình luận",
-                                      },
-                                      {
-                                        validator: validateContent,
-                                      },
-                                    ]}
-                                  >
-                                    <TextArea
-                                      onChange={(e) =>
-                                        setContent(e.target.value)
-                                      }
-                                      value={content}
-                                      showCount
-                                      maxLength={100}
-                                      style={{ height: 120, resize: "none" }}
-                                      placeholder="Hãy bình luận sản phẩm này"
-                                    />
-                                  </Form.Item>
-                                  <div className="wrap__button">
-                                    <Button
-                                      disabled={
-                                        !content || containsSensitiveWord
-                                      }
-                                      onClick={() => onFinish()}
-                                      type="primary"
-                                      className="bg-[color:var(--theme-primary)]"
-                                    >
-                                      Đánh giá
-                                    </Button>
-                                  </div>
-                                </Form>
-                              </Modal>
-                            </td>
-                          ) : (
-                            <></>
+
+                <div className="order-products-list">
+                  {order?.items?.map((item: any) => (
+                    <article className="order-product-card" key={item._id}>
+                      <div className="order-product-card__media">
+                        <img
+                          src={item?.image || fallbackProductImage}
+                          alt={
+                            item?.productName ??
+                            item?.productId?.name ??
+                            "Sản phẩm"
+                          }
+                        />
+                      </div>
+
+                      <div className="order-product-card__main">
+                        <div className="order-product-card__title">
+                          {item?.productName ?? item?.productId?.name}
+                        </div>
+                        <div className="order-product-card__meta">
+                          <span>Biến thể: {item?.productVariantName}</span>
+                          <span>Số lượng: {item.quantity}</span>
+                          <span>
+                            Đơn giá: {formatPrice(item?.productVariantPrice)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="order-product-card__aside">
+                        <div className="order-product-card__total">
+                          {formatPrice(
+                            item?.quantity * item?.productVariantPrice
                           )}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan={data?.order?.status === "Completed" ? 5 : 4}>
-                        Tổng giá trị sản phẩm
-                      </td>{" "}
-                      <td>{formatPrice(data?.order?.totalPrice)}</td>
-                    </tr>
-                    <tr>
-                      <td colSpan={data?.order?.status === "Completed" ? 5 : 4}>
-                        Giảm giá
-                      </td>{" "}
-                      <td>{formatPrice(data?.order?.couponPrice)}</td>
-                    </tr>
-                    <tr>
-                      <td colSpan={data?.order?.status === "Completed" ? 5 : 4}>
-                        Phí giao hàng
-                      </td>{" "}
-                      <td>{formatPrice(data?.order?.shippingPrice)}</td>
-                    </tr>
-                    <tr className="total_payment">
-                      <td colSpan={data?.order?.status === "Completed" ? 5 : 4}>
-                        Tổng thanh toán
-                      </td>{" "}
-                      <td>
-                        {formatPrice(
-                          data?.order?.orderTotalPrice > 0
-                            ? data?.order?.orderTotalPrice
-                            : 0
-                        )}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
+                        </div>
+
+                        {order?.status === "Completed" ? (
+                          item?.isReview === true ? (
+                            <NavLink
+                              to={`/products/${item.productId._id}`}
+                              className="order-review-button order-review-button--muted"
+                            >
+                              Đã đánh giá
+                            </NavLink>
+                          ) : (
+                            <button
+                              type="button"
+                              className="order-review-button"
+                              onClick={() => openReviewModal(item)}
+                            >
+                              Đánh giá
+                            </button>
+                          )
+                        ) : null}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section className="order-detail-card order-detail-totals">
+                <div className="order-detail-section__header">
+                  <div>
+                    <span className="order-detail-card__eyebrow">
+                      Tổng kết đơn hàng
+                    </span>
+                    <h2>Chi phí cuối cùng</h2>
+                  </div>
+                </div>
+
+                <div className="order-totals-grid">
+                  <div className="order-totals-item">
+                    <span>Tổng giá trị sản phẩm</span>
+                    <strong>{formatPrice(order?.totalPrice)}</strong>
+                  </div>
+                  <div className="order-totals-item">
+                    <span>Giảm giá</span>
+                    <strong>{formatPrice(order?.couponPrice)}</strong>
+                  </div>
+                  <div className="order-totals-item">
+                    <span>Phí giao hàng</span>
+                    <strong>{formatPrice(order?.shippingPrice)}</strong>
+                  </div>
+                  <div className="order-totals-item order-totals-item--grand">
+                    <span>Tổng thanh toán</span>
+                    <strong>{formatPrice(order?.orderTotalPrice)}</strong>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </div>
       )}
+
+      <Modal
+        title="Thông tin nhân viên quản lý đơn"
+        open={isModalOpen}
+        onOk={closeStaffModal}
+        onCancel={closeStaffModal}
+      >
+        <div className="order-staff-modal">
+          <p>Số điện thoại: {infoStaff?.phone}</p>
+          <p>Email: {infoStaff?.email}</p>
+        </div>
+      </Modal>
+
+      <Modal
+        title={`Đánh giá sản phẩm${
+          reviewProductName ? `: ${reviewProductName}` : ""
+        }`}
+        open={isModalOpenReview}
+        onOk={closeReviewModal}
+        onCancel={closeReviewModal}
+      >
+        <Form form={form}>
+          <div className="box_rating">
+            <Form.Item name="rating" initialValue={0}>
+              <Rate value={raiting} onChange={(value) => setRaiting(value)} />
+            </Form.Item>
+          </div>
+          <Form.Item
+            name="review"
+            rules={[
+              {
+                required: true,
+                message: "Không được bỏ trống bình luận",
+              },
+              {
+                validator: validateContent,
+              },
+            ]}
+          >
+            <TextArea
+              onChange={(e) => setContent(e.target.value)}
+              value={content}
+              showCount
+              maxLength={100}
+              style={{ height: 120, resize: "none" }}
+              placeholder="Hãy bình luận về sản phẩm này"
+            />
+          </Form.Item>
+          <div className="wrap__button">
+            <button
+              type="button"
+              disabled={!content || containsSensitiveWord}
+              onClick={() => onFinish()}
+              className="order-review-submit"
+            >
+              Đánh giá
+            </button>
+          </div>
+        </Form>
+      </Modal>
     </>
   );
 };

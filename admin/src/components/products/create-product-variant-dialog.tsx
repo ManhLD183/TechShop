@@ -5,19 +5,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  UseFieldArrayAppend,
-  useFieldArray,
-  useForm,
-  useFormContext,
-} from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { UseFieldArrayAppend, useFormContext } from "react-hook-form";
 import { Inputs } from "./add-product-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -27,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { UploadCloud } from "lucide-react";
+import { generateImei, generateRandomString } from "@/lib/utils";
 
 interface CreateProductVariantDialogProps {
   open: boolean;
@@ -40,21 +35,22 @@ export const CreateProductVariantDialog = ({
   append,
 }: CreateProductVariantDialogProps) => {
   const addProductForm = useFormContext<Inputs>();
-  const [formState, setFormState] = useState({
+  const createInitialState = () => ({
     name: "",
     price: 0,
     inventory: 0,
     sku: "",
+    imei: generateImei(),
     options: addProductForm
       .getValues("options")
       .map((item) => ({ name: item.name, value: "" })),
     image: "",
   });
+  const [formState, setFormState] = useState(createInitialState);
 
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
-    //Create name for variant based on options
     const name = formState.options.every((option) => option.value.length > 0)
       ? formState.options.map((option) => option.value).join(" / ")
       : "";
@@ -70,7 +66,7 @@ export const CreateProductVariantDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Tạo biến thể</DialogTitle>
+          <DialogTitle>Tao bien the</DialogTitle>
         </DialogHeader>
 
         <div className="flex items-center gap-8">
@@ -113,10 +109,10 @@ export const CreateProductVariantDialog = ({
                       );
                     } else {
                       const reader = new FileReader();
-                      reader.onload = (e) => {
+                      reader.onload = (event) => {
                         setFormState((prev) => ({
                           ...prev,
-                          image: e.target?.result as string,
+                          image: event.target?.result as string,
                         }));
                       };
                       reader.readAsDataURL(file);
@@ -142,7 +138,6 @@ export const CreateProductVariantDialog = ({
                 />
               </div>
               {formState.image && (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={formState.image}
                   alt="Preview"
@@ -171,10 +166,10 @@ export const CreateProductVariantDialog = ({
                       );
                     } else {
                       const reader = new FileReader();
-                      reader.onload = (e) => {
+                      reader.onload = (event) => {
                         setFormState((prev) => ({
                           ...prev,
-                          image: e.target?.result as string,
+                          image: event.target?.result as string,
                         }));
                       };
                       reader.readAsDataURL(file);
@@ -186,10 +181,10 @@ export const CreateProductVariantDialog = ({
           </div>
 
           <div className="space-y-2 flex-1">
-            <Label>Tên</Label>
+            <Label>Ten</Label>
             <Input
               required
-              placeholder="Đen / XL"
+              placeholder="Den / XL"
               value={formState.name}
               onChange={(e) => {
                 setFormState((prev) => ({
@@ -199,10 +194,39 @@ export const CreateProductVariantDialog = ({
               }}
             />
           </div>
+          <FormItem className="w-full">
+            <FormLabel>IMEI</FormLabel>
+            <div className="flex items-center gap-2">
+              <FormControl>
+                <Input
+                  type="text"
+                  value={formState.imei}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      imei: e.target.value,
+                    }))
+                  }
+                />
+              </FormControl>
+              <Button
+                variant={"outline"}
+                type="button"
+                onClick={() =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    imei: generateImei(),
+                  }))
+                }
+              >
+                <span className="whitespace-nowrap">Tao ngau nhien</span>
+              </Button>
+            </div>
+          </FormItem>
         </div>
 
         <div>
-          <h3 className="font-semibold mb-2">Tùy chọn</h3>
+          <h3 className="font-semibold mb-2">Tuy chon</h3>
 
           <div className="gap-4 grid grid-cols-2">
             {addProductForm
@@ -234,8 +258,8 @@ export const CreateProductVariantDialog = ({
                           <SelectValue placeholder="Select an option..." />
                         </SelectTrigger>
                         <SelectContent>
-                          {item.values.map((value, index) => (
-                            <SelectItem key={index} value={value}>
+                          {item.values.map((value, valueIndex) => (
+                            <SelectItem key={valueIndex} value={value}>
                               {value}
                             </SelectItem>
                           ))}
@@ -250,7 +274,7 @@ export const CreateProductVariantDialog = ({
 
         <div className="flex flex-col items-start gap-6 sm:flex-row">
           <FormItem className="w-full">
-            <FormLabel>Giá</FormLabel>
+            <FormLabel>Gia</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -267,7 +291,7 @@ export const CreateProductVariantDialog = ({
             </FormControl>
           </FormItem>
           <FormItem className="w-full">
-            <FormLabel>Số lượng trong kho</FormLabel>
+            <FormLabel>So luong trong kho</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -287,7 +311,7 @@ export const CreateProductVariantDialog = ({
 
         <div className="flex flex-col items-end gap-4 sm:flex-row">
           <FormItem className="w-full">
-            <FormLabel>SKU:</FormLabel>
+            <FormLabel>SKU</FormLabel>
             <FormControl>
               <Input
                 type="text"
@@ -304,22 +328,13 @@ export const CreateProductVariantDialog = ({
           <Button
             variant={"outline"}
             onClick={() => {
-              //Generate SKU that includes numbers and letters
-              let result = "";
-              const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-              const charactersLength = characters.length;
-              for (let i = 0; i < 6; i++) {
-                result += characters.charAt(
-                  Math.floor(Math.random() * charactersLength)
-                );
-              }
               setFormState((prev) => ({
                 ...prev,
-                sku: result,
+                sku: generateRandomString(),
               }));
             }}
           >
-            <span className="whitespace-nowrap">Tạo ngẫu nhiên</span>
+            <span className="whitespace-nowrap">Tao ngau nhien</span>
           </Button>
         </div>
 
@@ -329,16 +344,19 @@ export const CreateProductVariantDialog = ({
             variant={"outline"}
             onClick={() => setOpen(false)}
           >
-            Hủy
+            Huy
           </Button>
           <Button
             type="submit"
             onClick={() => {
-              append(formState);
+              append({
+                ...formState,
+                imei: formState.imei.trim() || generateImei(),
+              });
               setOpen(false);
             }}
           >
-            Lưu thay đổi
+            Luu thay doi
           </Button>
         </DialogFooter>
       </DialogContent>

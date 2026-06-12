@@ -283,6 +283,7 @@ const Page: NextPageWithLayout = () => {
                     <TableHead>Số lượng</TableHead>
                     <TableHead>Giá</TableHead>
                     <TableHead>Tổng</TableHead>
+                    <TableHead>IMEI</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -306,6 +307,12 @@ const Page: NextPageWithLayout = () => {
                           (item.productVariantPrice ??
                             item.productVariantId.price) * item.quantity
                         )}
+                      </TableCell>
+                      <TableCell>
+                        IMEI:{" "}
+                        {item.productVariantImei ??
+                          item.productVariantId.imei ??
+                          "-"}
                       </TableCell>
                     </TableRow>
                   ))}

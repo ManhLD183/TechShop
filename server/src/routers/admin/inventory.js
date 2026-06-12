@@ -2,6 +2,7 @@ import { Router } from "express";
 import ProductVariant from "../../models/productVariant";
 import Category from "../../models/category";
 import Order from "../../models/order";
+import { generateImei } from "../../libs/utils";
 
 const router = Router();
 
@@ -132,9 +133,13 @@ router.get("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
+    const payload = {
+      ...req.body,
+      imei: req.body?.imei?.trim() || generateImei(),
+    };
     const productVariant = await ProductVariant.findByIdAndUpdate(
       req.params.id,
-      req.body
+      payload
     );
 
     return res.status(200).json(productVariant);

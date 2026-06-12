@@ -10,6 +10,11 @@ const ProductVariantSchema = mongoose.Schema(
     sku: {
       type: String,
     },
+    imei: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     price: {
       type: Number,
       require: true,

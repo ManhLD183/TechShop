@@ -17,6 +17,7 @@ export interface Product {
 export interface ProductVariant {
   _id: string;
   sku: string;
+  imei: string;
   name: string;
   price: number;
   inventory: number;
@@ -106,6 +107,7 @@ export interface Order {
     productName: string;
     productVariantName: string;
     productVariantPrice: string;
+    productVariantImei?: string;
     image: number;
     quantity: number;
     _id: string;

@@ -1,9 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "js-cookie";
-import { getCategories } from "../api/category";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { FiMenu, FiSearch, FiShoppingCart, FiSmartphone, FiX } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiMenu,
+  FiSearch,
+  FiShoppingCart,
+  FiSmartphone,
+  FiX,
+} from "react-icons/fi";
+
+import { getCategories } from "../api/category";
 import { useGetCartOfUserQuery } from "../api/cart";
 import { useGetProfileByAcountQuery } from "../api/acount";
 
@@ -25,10 +33,21 @@ const Header = () => {
   const [searchResult, setSearchResult] = useState<ProductSearchItem[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const [isMobileCategoryMenuOpen, setIsMobileCategoryMenuOpen] =
+    useState(false);
 
   const navigate = useNavigate();
+  const categoryMenuRef = useRef<HTMLDivElement | null>(null);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+
   const { data: carts, isLoading } = useGetCartOfUserQuery(token);
   const { data: profile } = useGetProfileByAcountQuery(token);
+
+  const featuredCategories = useMemo(
+    () => categories.slice(0, 3),
+    [categories],
+  );
 
   const cartCount = useMemo(
     () =>
@@ -63,6 +82,26 @@ const Header = () => {
     return () => clearTimeout(id);
   }, [keyword]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (
+        categoryMenuRef.current &&
+        !categoryMenuRef.current.contains(target)
+      ) {
+        setIsCategoryMenuOpen(false);
+      }
+
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleLogout = () => {
     Cookies.remove("email");
     Cookies.remove("firstName");
@@ -70,11 +109,17 @@ const Header = () => {
     Cookies.remove("avatar");
     Cookies.remove("token");
     setToken(undefined);
+    setIsUserMenuOpen(false);
     navigate("/");
   };
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+    setIsMobileCategoryMenuOpen(false);
+  };
+
   return (
-    <header className="fixed top-0 w-full z-50 bg-[color:rgba(19,19,19,0.8)] backdrop-blur-xl border-b border-[color:var(--theme-outline)] text-[color:var(--theme-text)]">
+    <header className="fixed top-0 w-full z-50 border-b border-[color:var(--theme-outline)] bg-[color:rgba(255,252,247,0.88)] text-[color:var(--theme-text)] shadow-[0_12px_32px_rgba(38,52,77,0.08)] backdrop-blur-xl">
       <div className="theme-container py-3">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-6">
@@ -102,7 +147,7 @@ const Header = () => {
               >
                 Tất cả
               </Link>
-              {categories.slice(0, 4).map((category) => (
+              {featuredCategories.map((category) => (
                 <Link
                   key={category._id}
                   to={`/categories/${category._id}`}
@@ -111,6 +156,47 @@ const Header = () => {
                   {category.name}
                 </Link>
               ))}
+              {categories.length > 3 ? (
+                <div className="relative" ref={categoryMenuRef}>
+                  <button
+                    type="button"
+                    className="flex items-center gap-1 text-sm font-medium text-[color:var(--theme-text-muted)] transition-colors hover:text-[color:var(--theme-text)]"
+                    onClick={() =>
+                      setIsCategoryMenuOpen((previous) => !previous)
+                    }
+                    aria-expanded={isCategoryMenuOpen}
+                    aria-label="Mở danh sách danh mục"
+                  >
+                    Danh mục
+                    <FiChevronDown
+                      size={14}
+                      className={`transition-transform ${
+                        isCategoryMenuOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {isCategoryMenuOpen ? (
+                    <div className="absolute left-0 top-full mt-3 w-[260px] rounded-2xl border border-[color:var(--theme-outline)] bg-[color:var(--theme-surface)] p-3 shadow-[0_20px_40px_rgba(38,52,77,0.10)]">
+                      <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--theme-text-muted)]">
+                        Tất cả danh mục
+                      </div>
+                      <div className="grid max-h-[320px] gap-1 overflow-auto no-scrollbar">
+                        {categories.map((category) => (
+                          <Link
+                            key={category._id}
+                            to={`/categories/${category._id}`}
+                            className="rounded-xl px-3 py-2 text-sm font-medium text-[color:var(--theme-text)] transition hover:bg-[color:rgba(49,95,214,0.08)]"
+                            onClick={() => setIsCategoryMenuOpen(false)}
+                          >
+                            {category.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
               <Link
                 to="/promotions"
                 className="text-sm font-medium text-[color:var(--theme-text-muted)] hover:text-[color:var(--theme-text)] transition-colors"
@@ -129,11 +215,11 @@ const Header = () => {
               <input
                 value={keyword}
                 onChange={(event) => setKeyword(event.target.value)}
-                className="h-10 w-[260px] rounded-full border border-[color:var(--theme-outline)] bg-[color:var(--theme-surface)] px-10 text-sm text-[color:var(--theme-text)] placeholder:text-[color:var(--theme-text-muted)] focus:border-[color:var(--theme-primary)] focus:outline-none transition-all"
+                className="h-10 w-[260px] rounded-full border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.88)] px-10 text-sm text-[color:var(--theme-text)] placeholder:text-[color:var(--theme-text-muted)] shadow-[0_12px_24px_rgba(38,52,77,0.06)] focus:border-[color:var(--theme-primary)] focus:outline-none transition-all"
                 placeholder="Tìm kiếm..."
               />
-              {keyword && (
-                <div className="absolute left-0 right-0 top-full z-10 mt-2 rounded-xl border border-[color:var(--theme-outline)] bg-[color:var(--theme-surface-high)] p-2">
+              {keyword ? (
+                <div className="absolute left-0 right-0 top-full z-10 mt-2 rounded-xl border border-[color:var(--theme-outline)] bg-[color:var(--theme-surface)] p-2 shadow-[0_20px_40px_rgba(38,52,77,0.10)]">
                   {searchResult.length === 0 ? (
                     <small className="px-2 text-[color:var(--theme-text-muted)]">
                       Không có kết quả.
@@ -147,7 +233,7 @@ const Header = () => {
                           setKeyword("");
                           setSearchResult([]);
                         }}
-                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-[color:var(--theme-text)] transition hover:bg-white/10"
+                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-[color:var(--theme-text)] transition hover:bg-[color:rgba(49,95,214,0.08)]"
                         type="button"
                       >
                         <img
@@ -162,7 +248,7 @@ const Header = () => {
                     ))
                   )}
                 </div>
-              )}
+              ) : null}
             </div>
 
             <Link
@@ -171,17 +257,17 @@ const Header = () => {
             >
               <FiShoppingCart size={20} />
               {cartCount > 0 ? (
-                <span className="absolute -top-2 -right-3 rounded-full bg-[color:var(--theme-primary)] px-1.5 py-0.5 text-[10px] font-bold text-[#0f172a]">
+                <span className="absolute -top-2 -right-3 rounded-full bg-[color:var(--theme-primary)] px-1.5 py-0.5 text-[10px] font-bold text-white">
                   {cartCount}
                 </span>
               ) : null}
             </Link>
 
             {token ? (
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  className="flex items-center gap-2 rounded-full border border-[color:var(--theme-outline)] px-3 py-1.5 text-sm transition hover:bg-white/10"
-                  onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                  className="flex items-center gap-2 rounded-full border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.68)] px-3 py-1.5 text-sm transition hover:bg-[color:rgba(49,95,214,0.08)]"
+                  onClick={() => setIsUserMenuOpen((previous) => !previous)}
                   type="button"
                 >
                   <img
@@ -196,16 +282,16 @@ const Header = () => {
                   </span>
                 </button>
                 {isUserMenuOpen ? (
-                  <div className="absolute right-0 mt-2 min-w-[180px] rounded-xl border border-[color:var(--theme-outline)] bg-[color:var(--theme-surface-high)] p-2">
+                  <div className="absolute right-0 mt-2 min-w-[180px] rounded-xl border border-[color:var(--theme-outline)] bg-[color:var(--theme-surface)] p-2 shadow-[0_20px_40px_rgba(38,52,77,0.10)]">
                     <Link
                       to="/profileDetail"
-                      className="block rounded-lg px-3 py-1.5 text-sm text-[color:var(--theme-text)] hover:bg-white/10"
+                      className="block rounded-lg px-3 py-1.5 text-sm text-[color:var(--theme-text)] hover:bg-[color:rgba(49,95,214,0.08)]"
                     >
                       Thông tin cá nhân
                     </Link>
                     <Link
                       to="/orderClient"
-                      className="block rounded-lg px-3 py-1.5 text-sm text-[color:var(--theme-text)] hover:bg-white/10"
+                      className="block rounded-lg px-3 py-1.5 text-sm text-[color:var(--theme-text)] hover:bg-[color:rgba(49,95,214,0.08)]"
                     >
                       Lịch sử đơn hàng
                     </Link>
@@ -223,13 +309,13 @@ const Header = () => {
               <div className="hidden items-center gap-2 sm:flex">
                 <Link
                   to="/signin"
-                  className="rounded-full border border-[color:var(--theme-outline)] px-3 py-1.5 text-sm transition hover:bg-white/10"
+                  className="rounded-full border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.68)] px-3 py-1.5 text-sm transition hover:bg-[color:rgba(49,95,214,0.08)]"
                 >
                   Đăng nhập
                 </Link>
                 <Link
                   to="/signup"
-                  className="rounded-full bg-[color:var(--theme-primary)] px-3 py-1.5 text-sm font-semibold text-[#0f172a] transition hover:brightness-110"
+                  className="rounded-full bg-[color:var(--theme-primary)] px-3 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
                 >
                   Đăng ký
                 </Link>
@@ -238,7 +324,7 @@ const Header = () => {
 
             <button
               className="md:hidden text-[color:var(--theme-text-muted)] hover:text-[color:var(--theme-text)] transition-colors"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              onClick={() => setIsMobileMenuOpen((previous) => !previous)}
               type="button"
               aria-label="Toggle menu"
             >
@@ -253,50 +339,86 @@ const Header = () => {
               <Link
                 to="/Home"
                 className="text-lg font-bold text-[color:var(--theme-text)] hover:text-[color:var(--theme-primary)] transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 Trang chủ
               </Link>
               <Link
                 to="/shops"
                 className="text-lg font-bold text-[color:var(--theme-text)] hover:text-[color:var(--theme-primary)] transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 Tất cả
               </Link>
-              {categories.slice(0, 6).map((category) => (
+              {featuredCategories.map((category) => (
                 <Link
                   key={category._id}
                   to={`/categories/${category._id}`}
                   className="text-sm text-[color:var(--theme-text)] hover:text-[color:var(--theme-text-muted)] transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                 >
                   {category.name}
                 </Link>
               ))}
+              {categories.length > 3 ? (
+                <div className="rounded-2xl border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.7)] p-2">
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between rounded-xl px-2 py-2 text-left text-sm font-semibold text-[color:var(--theme-text)] transition hover:bg-[color:rgba(49,95,214,0.08)]"
+                    onClick={() =>
+                      setIsMobileCategoryMenuOpen((previous) => !previous)
+                    }
+                    aria-expanded={isMobileCategoryMenuOpen}
+                  >
+                    <span>Tất cả danh mục</span>
+                    <FiChevronDown
+                      size={16}
+                      className={`transition-transform ${
+                        isMobileCategoryMenuOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {isMobileCategoryMenuOpen ? (
+                    <div className="mt-2 grid gap-1 border-t border-[color:var(--theme-outline)] pt-2">
+                      {categories.map((category) => (
+                        <Link
+                          key={category._id}
+                          to={`/categories/${category._id}`}
+                          className="rounded-xl px-2 py-2 text-sm text-[color:var(--theme-text)] transition hover:bg-[color:rgba(49,95,214,0.08)]"
+                          onClick={() => {
+                            setIsMobileCategoryMenuOpen(false);
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
+                          {category.name}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
               <Link
                 to="/promotions"
                 className="text-lg font-bold text-[color:var(--theme-text)] hover:text-[color:var(--theme-primary)] transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 Khuyến mãi
               </Link>
 
               {token ? (
-                <>
-                  <Link
-                    to="/profileDetail"
-                    className="text-sm text-[color:var(--theme-text)] hover:text-[color:var(--theme-text-muted)] transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Tài khoản
-                  </Link>
-                </>
+                <Link
+                  to="/profileDetail"
+                  className="text-sm text-[color:var(--theme-text)] hover:text-[color:var(--theme-text-muted)] transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  Tài khoản
+                </Link>
               ) : (
                 <Link
                   to="/signin"
-                  className="w-full py-3 bg-[color:var(--theme-primary)] text-[#0f172a] text-center font-bold rounded-xl hover:brightness-110 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full rounded-xl bg-[color:var(--theme-primary)] py-3 text-center font-bold text-white transition-colors hover:brightness-110"
+                  onClick={closeMobileMenu}
                 >
                   Đăng nhập
                 </Link>
@@ -307,7 +429,7 @@ const Header = () => {
       </div>
 
       {isLoading ? (
-        <div className="bg-[color:rgba(28,27,27,0.8)] py-1 text-center text-xs text-[color:var(--theme-text-muted)]">
+        <div className="border-b border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.74)] py-1 text-center text-xs text-[color:var(--theme-text-muted)]">
           Đang tải giỏ hàng...
         </div>
       ) : null}

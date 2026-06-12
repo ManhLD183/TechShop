@@ -2,11 +2,10 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,7 @@ import { InventoryResponse } from "@/services/inventory/inventory-query";
 import axiosClient from "@/lib/axios-instance";
 import { toast } from "sonner";
 import { queryClient } from "@/lib/react-query";
-import { generateRandomString } from "@/lib/utils";
+import { generateImei, generateRandomString } from "@/lib/utils";
 
 export const EditProductVariantDialog = ({
   productVariant,
@@ -24,15 +23,19 @@ export const EditProductVariantDialog = ({
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const initialImei = React.useMemo(
+    () => productVariant.imei?.trim() || generateImei(),
+    [productVariant.imei]
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant={"default"}>Cập nhật</Button>
+        <Button variant={"default"}>Cap nhat</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Cập nhật biến thể sản phẩm</DialogTitle>
+          <DialogTitle>Cap nhat bien the san pham</DialogTitle>
           <div className="text-sm text-slate-600">
             <h6 className="font-semibold">{productVariant.productId.name}</h6>
             <p>{productVariant.options.join(" / ")}</p>
@@ -45,6 +48,8 @@ export const EditProductVariantDialog = ({
             const price = (e.target as HTMLFormElement)["price"].value;
             const inventory = (e.target as HTMLFormElement)["inventory"].value;
             const sku = (e.target as HTMLFormElement)["sku"].value;
+            const imei =
+              (e.target as HTMLFormElement)["imei"].value || generateImei();
 
             try {
               setIsLoading(true);
@@ -54,6 +59,7 @@ export const EditProductVariantDialog = ({
                   price,
                   inventory,
                   sku,
+                  imei,
                 }
               );
 
@@ -75,7 +81,7 @@ export const EditProductVariantDialog = ({
         >
           <div className="space-y-2">
             <Label htmlFor="price" className="text-right">
-              Giá
+              Gia
             </Label>
             <Input
               id="price"
@@ -88,7 +94,7 @@ export const EditProductVariantDialog = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="inventory" className="text-right">
-              Sẵn hàng
+              Kho
             </Label>
             <Input
               id="inventory"
@@ -119,13 +125,36 @@ export const EditProductVariantDialog = ({
                     generateRandomString();
                 }}
               >
-                <span className="whitespace-nowrap">Tạo ngẫu nhiên</span>
+                <span className="whitespace-nowrap">Tao ngau nhien</span>
+              </Button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="imei" className="text-right">
+              IMEI
+            </Label>
+            <div className="flex justify-between gap-2 items-center">
+              <Input
+                id="imei"
+                type="text"
+                defaultValue={initialImei}
+                className="col-span-3"
+              />
+              <Button
+                variant={"outline"}
+                type="button"
+                onClick={() => {
+                  (document.getElementById("imei") as HTMLInputElement).value =
+                    generateImei();
+                }}
+              >
+                <span className="whitespace-nowrap">Tao ngau nhien</span>
               </Button>
             </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isLoading}>
-              Lưu thay đổi
+              Luu thay doi
             </Button>
           </DialogFooter>
         </form>

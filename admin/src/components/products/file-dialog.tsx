@@ -32,6 +32,11 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export type FileWithPreview = FileWithPath & {
   preview: string;
+  existingImage?: {
+    name: string;
+    url: string;
+    publicId: string;
+  };
 };
 
 // FIXME Your proposed upload exceeds the maximum allowed size, this should trigger toast.error too

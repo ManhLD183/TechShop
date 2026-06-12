@@ -69,6 +69,17 @@ export const create = async (req, res) => {
     }
 
     let order;
+    const enrichedItems = validatedBody.items.map((item) => {
+      const matchedVariant = checkItems.find(
+        (variant) => variant._id.toString() === item.productVariantId
+      );
+
+      return {
+        ...item,
+        productVariantImei: matchedVariant?.imei ?? "",
+      };
+    });
+
     if (body.discountId) {
       const discountCheck = await Discount.findById(body.discountId);
       if (!discountCheck) {
@@ -78,6 +89,7 @@ export const create = async (req, res) => {
       }
       order = await Order.create({
         ...validatedBody,
+        items: enrichedItems,
         managerId: staffs[0]._id,
         shipperId: shippers[0]._id,
         customerId: user._id,
@@ -106,6 +118,7 @@ export const create = async (req, res) => {
     } else {
       order = await Order.create({
         ...validatedBody,
+        items: enrichedItems,
         managerId: staffs[0]._id,
         shipperId: shippers[0]._id,
         customerId: user._id,

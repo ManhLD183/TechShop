@@ -119,6 +119,10 @@ const orderSchema = mongoose.Schema(
           type: Number,
           require: true,
         },
+        productVariantImei: {
+          type: String,
+          default: "",
+        },
         image: {
           type: String,
           require: true,

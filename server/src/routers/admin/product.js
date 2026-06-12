@@ -8,8 +8,71 @@ import {
 } from "../../validators/product";
 import Comment from "../../models/comment";
 import { cloudinary } from "../../libs/cloudinary";
+import { generateImei } from "../../libs/utils";
 
 const router = Router();
+
+const isVariantUploadSource = (image) =>
+  typeof image === "string" && image.startsWith("data:");
+
+const resolveVariantImage = async (image, name) => {
+  if (!image || typeof image !== "string") {
+    return "";
+  }
+
+  if (!isVariantUploadSource(image)) {
+    return image;
+  }
+
+  const { secure_url } = await cloudinary.uploader.upload(image, {
+    public_id: name,
+    folder: "products",
+    overwrite: true,
+    invalidate: true,
+  });
+
+  return secure_url;
+};
+
+const dedupeProductImages = (images) =>
+  images.reduceRight((result, image) => {
+    const isDuplicated = result.some(
+      (currentImage) =>
+        currentImage.publicId === image.publicId ||
+        currentImage.url === image.url
+    );
+
+    if (!isDuplicated) {
+      result.unshift(image);
+    }
+
+    return result;
+  }, []);
+
+const buildProductImages = ({
+  images,
+  variants,
+  previousVariantNames = [],
+}) => {
+  const variantNames = new Set([
+    ...previousVariantNames,
+    ...variants.map((variant) => variant.name),
+  ]);
+
+  const manualImages = images.filter(
+    (image) => !variantNames.has(image.publicId)
+  );
+
+  const variantImages = variants
+    .filter((variant) => typeof variant.image === "string" && variant.image.length > 0)
+    .map((variant) => ({
+      name: variant.name,
+      url: variant.image,
+      publicId: variant.name,
+    }));
+
+  return dedupeProductImages([...manualImages, ...variantImages]);
+};
 
 router.get("/", async (req, res) => {
   try {
@@ -96,6 +159,13 @@ router.post("/", async (req, res) => {
       images,
       status,
     } = productCreateBodySchema.parse(req.body);
+    const resolvedVariants = await Promise.all(
+      variants.map(async (variant) => ({
+        ...variant,
+        imei: variant.imei?.trim() || generateImei(),
+        image: await resolveVariantImage(variant.image, variant.name),
+      }))
+    );
     const numberPrice = variants.map((variant) => {
       return variant.price;
     });
@@ -108,56 +178,26 @@ router.post("/", async (req, res) => {
       categoryId,
       code: productCode,
       options,
-      images,
+      images: buildProductImages({
+        images: dedupeProductImages(images),
+        variants: resolvedVariants,
+      }),
       status,
       minPrice,
       maxPrice,
     });
 
-    const imageSet = new Set();
-
     let productVariantIds = [];
 
-    for (const variant of variants) {
-      let image = variant.image;
-
-      if (variant.image.length > 0) {
-        const { secure_url } = await cloudinary.uploader.upload(image, {
-          public_id: variant.name,
-          folder: "products",
-          overwrite: true,
-          invalidate: true,
-        });
-
-        image = secure_url;
-      }
-
-      if (!imageSet.has(variant.image) && variant.image.length > 0) {
-        await Product.findByIdAndUpdate(
-          product._id,
-          {
-            $addToSet: {
-              images: {
-                name: variant.name,
-                url: image,
-                publicId: variant.name,
-              },
-            },
-          },
-          {
-            new: true,
-          }
-        );
-      }
-      imageSet.add(variant.image);
-
+    for (const variant of resolvedVariants) {
       const productVariant = await ProductVariant.create({
         name: variant.name,
         price: variant.price,
         inventory: variant.inventory,
         options: variant.options,
         sku: variant.sku,
-        image,
+        imei: variant.imei,
+        image: variant.image,
         productId: product._id,
       });
 
@@ -222,8 +262,18 @@ router.put("/:id", async (req, res) => {
       images,
       variants,
     } = productUpdateBodySchema.parse(req.body);
+    const previousVariantNames = await ProductVariant.find({
+      productId: req.params.id,
+    }).distinct("name");
+    const resolvedVariants = await Promise.all(
+      variants.map(async (variant) => ({
+        ...variant,
+        imei: variant.imei?.trim() || generateImei(),
+        image: await resolveVariantImage(variant.image, variant.name),
+      }))
+    );
 
-    const numberPrice = variants.map((variant) => {
+    const numberPrice = resolvedVariants.map((variant) => {
       return variant.price;
     });
     const minPrice = Math.min(...numberPrice);
@@ -238,7 +288,11 @@ router.put("/:id", async (req, res) => {
         code: productCode,
         categoryId,
         options,
-        images,
+        images: buildProductImages({
+          images: dedupeProductImages(images),
+          variants: resolvedVariants,
+          previousVariantNames,
+        }),
         minPrice,
         maxPrice,
       },
@@ -253,50 +307,17 @@ router.put("/:id", async (req, res) => {
       });
     }
 
-    const imageSet = new Set(data.images.map((image) => image.url));
-
-    for (const variant of variants) {
-      let image = variant.image;
-
-      if (variant.image.length > 0) {
-        const { secure_url } = await cloudinary.uploader.upload(image, {
-          public_id: variant.name,
-          folder: "products",
-          overwrite: true,
-          invalidate: true,
-        });
-
-        image = secure_url;
-      }
-
-      if (!imageSet.has(variant.image) && variant.image.length > 0) {
-        await Product.findByIdAndUpdate(
-          req.params.id,
-          {
-            $addToSet: {
-              images: {
-                name: variant.name,
-                url: image,
-                publicId: variant.name,
-              },
-            },
-          },
-          {
-            new: true,
-          }
-        );
-      }
-      imageSet.add(variant.image);
-
+    for (const variant of resolvedVariants) {
       await ProductVariant.findOneAndUpdate(
         { _id: variant.id },
         {
           name: variant.name,
           sku: variant.sku,
+          imei: variant.imei,
           price: variant.price,
           inventory: variant.inventory,
           options: variant.options,
-          image,
+          image: variant.image,
         },
         {
           new: true,

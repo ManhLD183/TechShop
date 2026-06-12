@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { FiArrowRight, FiFileText, FiRefreshCcw, FiShield, FiTruck, FiLock } from "react-icons/fi";
 
@@ -71,7 +70,7 @@ export default function Policy() {
           {policies.map((policy, idx) => (
             <div
               key={idx}
-              className="p-10 bg-white/5 border border-[color:var(--theme-outline)] rounded-[3rem] hover:border-[color:rgba(177,199,243,0.45)] transition-all group"
+              className="group rounded-[3rem] border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.84)] p-10 shadow-[0_18px_44px_rgba(38,52,77,0.08)] hover:border-[color:rgba(49,95,214,0.24)] transition-all"
             >
               <div className="flex items-center gap-6 mb-8">
                 <div className="w-16 h-16 bg-[color:rgba(177,199,243,0.18)] text-[color:var(--theme-primary)] rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
@@ -107,7 +106,7 @@ export default function Policy() {
           ))}
         </div>
 
-        <section className="mt-32 p-12 md:p-20 bg-white/5 border border-[color:var(--theme-outline)] rounded-[4rem] text-center">
+        <section className="mt-32 rounded-[4rem] border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.84)] p-12 text-center shadow-[0_18px_44px_rgba(38,52,77,0.08)] md:p-20">
           <div className="mx-auto mb-8">
             <FiFileText size={48} className="text-[color:var(--theme-primary)]" />
           </div>
@@ -119,13 +118,13 @@ export default function Policy() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link
               to="/contact"
-              className="px-10 py-5 bg-[color:var(--theme-primary)] text-[#0f172a] font-bold rounded-2xl hover:brightness-110 transition-all shadow-xl shadow-[color:rgba(177,199,243,0.25)]"
+              className="rounded-2xl bg-[color:var(--theme-primary)] px-10 py-5 font-bold text-white shadow-[0_18px_36px_rgba(49,95,214,0.18)] transition-all hover:brightness-110"
             >
               Liên Hệ Ngay
             </Link>
             <Link
               to="/about"
-              className="px-10 py-5 bg-white/5 border border-[color:var(--theme-outline)] text-[color:var(--theme-text)] font-bold rounded-2xl hover:bg-white/10 transition-all"
+              className="rounded-2xl border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.7)] px-10 py-5 font-bold text-[color:var(--theme-text)] transition-all hover:bg-[color:rgba(255,255,255,0.92)]"
             >
               Câu Hỏi Thường Gặp
             </Link>

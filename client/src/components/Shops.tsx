@@ -4,6 +4,9 @@ import { getCategories } from "../api/category";
 import { useNavigate } from "react-router-dom";
 import { Pagination, Rate } from "antd";
 import "../Assets/CSS/bao.css";
+
+const fallbackProductImage = new URL("../Assets/product2.jpg", import.meta.url)
+  .href;
 const Shops = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [ishandleSortVisible, setIsSortVisible] = useState(false);
@@ -247,7 +250,12 @@ const Shops = () => {
                         key={index + 1}
                       >
                         <div className="qiezzz">
-                          <img src={`${product?.images[0].url}`} alt="" />
+                          <img
+                            src={
+                              product?.images?.[0]?.url || fallbackProductImage
+                            }
+                            alt={product?.name || "Product image"}
+                          />
                           <a
                             className="btn-def btn-product-qview q-view"
                             data-bs-toggle="modal"

@@ -7,6 +7,9 @@ import {
 } from "../api/category";
 import { Pagination, Rate } from "antd";
 
+const fallbackProductImage = new URL("../Assets/product2.jpg", import.meta.url)
+  .href;
+
 const CategoryDetail = () => {
   const navigate = useNavigate();
   const { id }: any = useParams();
@@ -21,6 +24,13 @@ const CategoryDetail = () => {
   const handleSortClick = () => {
     setIsSortVisible(!ishandleSortVisible);
   };
+
+  useEffect(() => {
+    setPage(1);
+    setIsSortVisible(false);
+    window.scrollTo(0, 0);
+  }, [id]);
+
   useEffect(() => {
     setIsLoading(true);
     getCategoryById(id, sort, order, page).then((data) => {
@@ -33,7 +43,7 @@ const CategoryDetail = () => {
     getCategoryDetail(id).then((data: any) => {
       setCategory(data.data);
     });
-  }, [sort, order, page]);
+  }, [id, sort, order, page]);
   const formatPrice = (price: any) => {
     const formattedPrice = new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -149,7 +159,10 @@ const CategoryDetail = () => {
                         className="pro"
                         key={index + 1}
                       >
-                        <img src={`${product?.images[0].url}`} alt="" />
+                        <img
+                          src={product?.images?.[0]?.url || fallbackProductImage}
+                          alt={product?.name || "Product image"}
+                        />
                         <div className="des">
                           <span>{category?.name}</span>
                           <h5>{product.name}</h5>
@@ -170,7 +183,7 @@ const CategoryDetail = () => {
                   })}
                 </div>
                 <Pagination
-                  defaultCurrent={page}
+                  current={page}
                   onChange={(value) => setPage(value)}
                   total={productsNoPage?.length}
                   pageSize={8}

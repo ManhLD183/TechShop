@@ -98,7 +98,7 @@ const Home = () => {
             alt="Hero Background"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[color:rgba(246,241,232,0.92)] via-[color:rgba(246,241,232,0.55)] to-[color:rgba(255,255,255,0.35)]" />
         </div>
 
         <div className="theme-container relative z-10 w-full">
@@ -117,7 +117,7 @@ const Home = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <button
-                className="bg-[color:var(--theme-primary)] text-[#0f172a] px-8 py-4 rounded-full font-bold hover:brightness-110 transition-all flex items-center gap-2 group"
+                className="bg-[color:var(--theme-primary)] px-8 py-4 rounded-full font-bold text-white shadow-[0_16px_32px_rgba(49,95,214,0.18)] hover:brightness-110 transition-all flex items-center gap-2 group"
                 onClick={() => navigate("/shops")}
                 type="button"
               >
@@ -125,7 +125,7 @@ const Home = () => {
                 <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
               </button>
               <button
-                className="bg-white/5 backdrop-blur-md border border-[color:var(--theme-outline)] text-[color:var(--theme-text)] px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all"
+                className="bg-[color:rgba(255,255,255,0.78)] backdrop-blur-md border border-[color:var(--theme-outline)] text-[color:var(--theme-text)] px-8 py-4 rounded-full font-bold shadow-[0_14px_30px_rgba(38,52,77,0.08)] hover:bg-[color:rgba(255,255,255,0.92)] transition-all"
                 onClick={() => navigate("/blog")}
                 type="button"
               >
@@ -141,12 +141,12 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-16 border-b border-[color:var(--theme-outline)] bg-white/5">
+      <section className="border-b border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.62)] py-16">
         <div className="theme-container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {features.map((feature) => (
               <div key={feature.title} className="flex flex-col items-center text-center group">
-                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[color:rgba(177,199,243,0.18)] transition-colors">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:rgba(255,255,255,0.86)] shadow-[0_12px_24px_rgba(38,52,77,0.06)] group-hover:bg-[color:rgba(49,95,214,0.12)] transition-colors">
                   <feature.icon
                     className="text-[color:var(--theme-primary)]"
                     size={24}
@@ -183,9 +183,9 @@ const Home = () => {
             {featuredProducts.map((product) => (
                 <div
                   key={product._id}
-                  className="group bg-white/5 border border-[color:var(--theme-outline)] rounded-3xl overflow-hidden hover:border-[color:rgba(177,199,243,0.45)] transition-all"
+                  className="group overflow-hidden rounded-3xl border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.82)] shadow-[0_18px_40px_rgba(38,52,77,0.08)] hover:border-[color:rgba(49,95,214,0.24)] transition-all"
                 >
-                <Link to={`/products/${product._id}`} className="relative aspect-square block overflow-hidden bg-white/5">
+                <Link to={`/products/${product._id}`} className="relative block aspect-square overflow-hidden bg-[color:rgba(248,244,236,0.9)]">
                   <img
                     src={product.images?.[0]?.url || "https://picsum.photos/seed/no-image/400/400"}
                     alt={product.name}
@@ -206,7 +206,7 @@ const Home = () => {
                         : `${formatPrice(product.minPrice)} - ${formatPrice(product.maxPrice)}`}
                     </span>
                     <button
-                      className="w-10 h-10 bg-[color:var(--theme-primary)] text-[#0f172a] rounded-full flex items-center justify-center hover:brightness-110 transition-all shadow-xl"
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--theme-primary)] text-white shadow-[0_12px_24px_rgba(49,95,214,0.16)] transition-all hover:brightness-110"
                       onClick={() => navigate(`/products/${product._id}`)}
                       type="button"
                     >
@@ -220,7 +220,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-16 border-y border-white/10 bg-white/[0.02]">
+      <section className="border-y border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.52)] py-16">
         <div className="theme-container">
           <div className="flex justify-between items-end mb-8">
             <h2 className="text-3xl font-bold tracking-tight">Danh mục nổi bật</h2>
@@ -233,7 +233,7 @@ const Home = () => {
                 <Link
                   to={`/categories/${category._id}`}
                   key={category._id}
-                  className="rounded-2xl overflow-hidden border border-[color:var(--theme-outline)] bg-white/5 hover:border-[color:rgba(177,199,243,0.5)] transition-all"
+                  className="overflow-hidden rounded-2xl border border-[color:var(--theme-outline)] bg-[color:rgba(255,255,255,0.84)] shadow-[0_16px_36px_rgba(38,52,77,0.08)] hover:border-[color:rgba(49,95,214,0.24)] transition-all"
                 >
                   <div className="h-48 overflow-hidden">
                     <img
@@ -262,7 +262,7 @@ const Home = () => {
               Theo dõi chương trình khuyến mãi và sản phẩm mới ngay trên hệ thống hiện tại.
             </p>
             <button
-              className="bg-[#0f172a] text-[color:var(--theme-primary)] px-10 py-4 rounded-full font-bold hover:scale-105 transition-all shadow-2xl"
+              className="rounded-full bg-[color:var(--theme-primary)] px-10 py-4 font-bold text-white shadow-[0_18px_36px_rgba(49,95,214,0.18)] transition-all hover:scale-105 hover:brightness-110"
               onClick={() => navigate("/shops")}
               type="button"
             >
